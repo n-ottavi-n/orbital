@@ -1,0 +1,15 @@
+\begindata
+KERNELS_TO_LOAD=(
+'spice_cassini\naif0009.tls',
+'spice_cassini\cas00084.tsc',
+'spice_cassini\cpck05Mar2004.tpc',
+'spice_cassini\020514_SE_SAT105.bsp',
+'spice_cassini\981005_PLTEPH-DE405S.bsp',
+'spice_cassini\030201AP_SK_SM546_T45.bsp',
+'spice_cassini\04135_04171pc_psiv2.bc',
+'spice_cassini\cas_v37.tf',
+'spice_cassini\cas_iss_v09.ti',
+'spice_cassini\de440.bsp',
+'spice_cassini\latest_leapseconds.tls',
+)
+\begintext

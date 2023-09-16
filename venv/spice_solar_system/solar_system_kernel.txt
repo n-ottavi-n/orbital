@@ -1,0 +1,15 @@
+\begindata
+KERNELS_TO_LOAD=(
+'spice_solar_system\codes_300ast_20100725.bsp',
+'spice_solar_system\codes_300ast_20100725.tf'
+'spice_solar_system\de440.bsp',
+'spice_solar_system\latest_leapseconds.tls',
+'spice_solar_system\naif0009.tls',
+'spice_solar_system\mro_cruise.bsp',
+'spice_solar_system\mro_v16.tf',
+'spice_solar_system\vg1_v02.tf',
+'spice_solar_system\vg2_v02.tf',
+'spice_solar_system\Voyager_1.a54206u_V0.2_merged.bsp',
+'spice_solar_system\Voyager_2.m05016u.merged.bsp'
+)
+\begintext

@@ -1,0 +1,10 @@
+\begindata
+KERNELS_TO_LOAD=(
+'spice_lunar/latest_leapseconds.tls',
+'spice_lunar/moon_de440_220930.tf',
+'spice_lunar/moon_pa_de440_200625.bpc',
+'spice_lunar/de440.bsp',
+'spice_lunar/clem_nrl.bsp',
+'spice_lunar/clem_v20.tf'
+)
+\begintext
