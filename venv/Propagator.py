@@ -104,7 +104,6 @@ class Propagator:
             a += 1.5 * self.cb['j2'] * self.cb['mu'] * self.cb['radius'] ** 2 / norm_r ** 4 * np.array([tx, ty, tz])
 
         if self.perts['moon']:
-            print('moon')
             r_sat2body=self.r_cb2nb[self.steps, :]-r
             a+=self.mu_moon*((r_sat2body/(np.linalg.norm(r_sat2body)**3))-(self.r_cb2nb[self.steps,:]/(np.linalg.norm(self.r_cb2nb[self.steps,:])**3)))
 
