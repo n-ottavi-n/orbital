@@ -22,7 +22,17 @@ class Propagator:
         if cartesian: [x0,y0,z0,vx0,vy0,vz0]
         if keplerian: a,e,i,m,aop,raan
     '''
-    def __init__(self, state0, n_steps, start_date='Sep 16, 2023', end_date='Sep 17, 2023', coes=False, deg=False, cb=pd.earth, perts=null_perts()):
+    def __init__(self, state0, n_steps, start_date='Sep 16, 2023, 00:00 UTC', end_date='Sep 17, 2023, 00:00 UTC', coes=False, deg=False, cb=pd.earth, perts=null_perts()):
+        '''
+        @param state0: if cartesian: [x0,y0,z0,vx0,vy0,vz0]  if keplerian: [a,e,i,m,aop,raan]
+        @param n_steps: number of timesteps for integration
+        @param start_date: format:  '%b %d, %Y, %H:%M %Z'
+        @param end_date: format:  '%b %d, %Y, %H:%M %Z'
+        @param coes: bool: True if state0 is keplerian elements
+        @param deg: bool: True if input keplerian elements in degrees
+        @param cb: central body
+        @param perts: perturbations to account for
+        '''
         if coes:
             self.r0,self.v0=t.coes2rv(state0, deg=deg, mu=cb['mu'])
         else:
@@ -70,9 +80,6 @@ class Propagator:
         self.rs=self.ys[:,:3]
         self.vs = self.ys[:,3:]
 
-
-
-
     def diffy_q(self, t, y):
         rx,ry,rz,vx,vy,vz=y
         r=np.array([rx,ry,rz])
@@ -117,75 +124,6 @@ class Propagator:
         for time in range(len(self.rs)):
             coes.append(t.rv2coes(self.rs[time],self.vs[time], deg=True))
         self.coes=np.array(coes)
-
-    def plot_3d(self, show_plot=False, save_plot=False, au_units=False):
-        fig = plt.figure(figsize=(10, 10))
-        ax = fig.add_subplot(111, projection='3d')
-        ax.set_aspect('equal')
-
-        # plot central body
-
-        radius=self.cb['radius']
-
-        if au_units:
-            radius=radius/1.5e8
-            self.rs=self.rs/1.5e8
-
-        #_u, _v = np.mgrid[0:2 * np.pi:50j, 0:np.pi:50j]
-        _u = np.linspace(0, 2 * np.pi, 100)
-        _v = np.linspace(0, np.pi, 100)
-        _x = radius * np.outer(np.cos(_u) , np.sin(_v))
-        _y = radius * np.outer(np.sin(_u) , np.sin(_v))
-        _z = radius * np.outer(np.ones(np.size(_u)), np.cos(_v))
-        ax.plot_surface(_x, _y, _z, color='linen', alpha=0.5)
-
-        # plot circular curves over the surface
-        theta = np.linspace(0, 2 * np.pi, 100)
-        z = np.zeros(100)
-        x = radius * np.sin(theta)
-        y = radius * np.cos(theta)
-
-        ax.plot(x, y, z, color='black', alpha=0.75)
-        ax.plot(z, x, y, color='black', alpha=0.75)
-
-        ## add axis lines
-        zeros = np.zeros(1000)
-        line = np.linspace(-10, 10, 1000)
-
-        ax.plot(line, zeros, zeros, color='black', alpha=0.75)
-        ax.plot(zeros, line, zeros, color='black', alpha=0.75)
-        ax.plot(zeros, zeros, line, color='black', alpha=0.75)
-
-
-        # plot trajectory
-        ax.plot(self.rs[:, 0], self.rs[:, 1], self.rs[:, 2], 'g', label='trajectory', zorder=4)
-        ax.plot([self.rs[0, 0]], [self.rs[0, 1]], [self.rs[0, 2]], 'wo', label='initial position', zorder=5)
-        ax.plot([self.rs[-1, 0]], [self.rs[-1, 1]], [self.rs[-1, 2]], 'yo', label='final position', zorder=6)
-
-        # plot x y z vectors
-        l = radius * 2
-
-        max_val = np.max(np.abs(self.rs))
-
-        ax.set_xlim([-max_val, max_val])
-        ax.set_ylim([-max_val, max_val])
-        ax.set_zlim([-max_val, max_val])
-
-        ax.set_xlabel('X (km)')
-        ax.set_ylabel('Y (km)')
-        ax.set_zlabel('Z (km)')
-
-        if au_units:
-            ax.set_xlabel('X (au)')
-            ax.set_ylabel('Y (au)')
-            ax.set_zlabel('Z (au)')
-
-        plt.legend()
-
-        if show_plot:
-            plt.show()
-        if save_plot:
-            plt.savefig(title+'.png')
 
     def plot_3d_animate(self, show_plot=False, save_plot=False, au_units=False):
         fig = plt.figure(figsize=(10, 10))

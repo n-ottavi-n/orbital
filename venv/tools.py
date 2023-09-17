@@ -243,7 +243,8 @@ def n_tle2coes(filename, n_objects, t0, mu=planetary_data.earth['mu']):
     n_object=0
     while n_object<n_objects:
         line0 = f.readline().strip().split(' ')
-        name = ' '.join(line0[1:])
+        name = ' '.join(line0[1:]) #get full name
+
         # get elements
         line1 = f.readline()
         line2 = re.split("\s+", f.readline().strip())
@@ -254,14 +255,15 @@ def n_tle2coes(filename, n_objects, t0, mu=planetary_data.earth['mu']):
         ma = float(line2[6]) #mean anomaly at epoch
         mm = float(line2[7])  # mean motion rev/day
 
-        #days between now and epoch
+        #days between t0 and epoch
         es_epoch=float(line1[3]) #element set epoch
-        curr_epoch=get_current_epoch(t0) # now
-        #current mean anomaly
-        ma_now=(ma+(curr_epoch-es_epoch)*mm*360)%360
+        t0_epoch=get_epoch(t0) # epoch at t0
+
+        ma_t0=(ma+(t0_epoch-es_epoch)*mm*360)%360 #mean anomaly at t0
+
         T = (1 / mm) * 24 * 3600
         a = ((mu * (T ** 2)) / (4 * (math.pi ** 2))) ** (1 / 3.0)
-        elements.append([a,e,i,ma_now,aop,raan])
+        elements.append([a,e,i,ma_t0,aop,raan])
         names.append(name)
         n_object+=1
     f.close()
@@ -369,8 +371,9 @@ def plot_n_orbits_animate(rs, step_t, labels, cb, show_plot=False, save=False, a
         ani.save('matplot003.gif', writer='imagemagick', fps=30)
         print("saved!")
 
-def get_current_epoch(t0):
+def get_epoch(t0):
     '''
+    returns the tle formatted epoch of date t0
     @param t0: str format='Sep 17, 2023, 00:00 UTC'
     @return: float time in format= yyddd.fraction of days
     exemple: Jan 14 2022 12:00 UTC = 22014.5
@@ -384,3 +387,76 @@ def get_current_epoch(t0):
     frac_day = dt.total_seconds() / secs_per_day
     res = yr * 1000 + day_of_year + frac_day
     return res
+
+def plot_pert_coes(coes, ts, labels,  hours=True, days=False):
+    print("plotting...")
+
+    xlabel = "seconds"
+
+    if hours:
+        ts = ts / 3600
+        xlabel = "hours"
+
+    if days:
+        ts = ts / (3600 * 24)
+        xlabel = "days"
+
+    fig, axs = plt.subplots(2, 3)
+
+
+    for i in range(len(coes)):
+        c=coes[i]
+        # plot semi major axis
+        axs[0, 0].plot(ts, c[:, 0], label=labels[i])
+        axs[0, 0].legend(loc="upper right")
+        # plot eccentricity
+        axs[0, 1].plot(ts, c[:, 1], label=labels[i])
+        axs[0, 1].legend(loc="upper right")
+        # plot inclination
+        axs[0, 2].plot(ts, c[:, 2], label=labels[i])
+        axs[0, 2].legend(loc="upper right")
+        # plot true anomaly
+        axs[1, 0].plot(ts, c[:, 3], label=labels[i])
+        axs[1, 0].legend(loc="upper right")
+        # plot argument of periapsis trendline
+        #z = np.polyfit(ts.flatten(), c[:, 4], 1)
+        #p = np.poly1d(z)
+        #axs[1, 1].plot(ts, p(ts), label=labels[i])
+        axs[1, 1].plot(ts, c[:, 4], label=labels[i])
+        axs[1, 1].legend(loc="upper right")
+        # plot longitude of ascending node
+        axs[1, 2].plot(ts, c[:, 5], label=labels[i])
+        axs[1, 2].legend(loc="upper right")
+        print(labels[i])
+
+    axs[0, 0].set_title('semi-major axis vs time')
+    axs[0, 0].grid(True)
+    axs[0, 0].set_ylabel("a (km)")
+    axs[0, 0].set_xlabel(xlabel)
+
+    axs[0, 1].set_title('eccentricity vs time')
+    axs[0, 1].grid(True)
+    axs[0, 1].set_ylabel("e")
+    axs[0, 1].set_xlabel(xlabel)
+
+    axs[0, 2].set_title('inclination vs time')
+    axs[0, 2].grid(True)
+    axs[0, 2].set_ylabel("i (deg)")
+    axs[0, 2].set_xlabel(xlabel)
+
+    axs[1, 0].set_title('true anomaly vs time')
+    axs[1, 0].grid(True)
+    axs[1, 0].set_ylabel("nu (deg)")
+    axs[1, 0].set_xlabel(xlabel)
+
+    axs[1, 1].set_title('apsidal rotation')
+    axs[1, 1].grid(True)
+    axs[1, 1].set_ylabel("aop (deg)")
+    axs[1, 1].set_xlabel(xlabel)
+
+    axs[1, 2].set_title('nodal regression')
+    axs[1, 2].grid(True)
+    axs[1, 2].set_ylabel("lan (deg)")
+    axs[1, 2].set_xlabel(xlabel)
+
+    plt.show()
