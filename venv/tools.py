@@ -388,7 +388,7 @@ def get_epoch(t0):
     res = yr * 1000 + day_of_year + frac_day
     return res
 
-def plot_pert_coes(coes, ts, labels,  hours=True, days=False):
+def plot_pert_coes(coes, ts, labels,  hours=False, days=False):
     print("plotting...")
 
     xlabel = "seconds"
@@ -402,6 +402,7 @@ def plot_pert_coes(coes, ts, labels,  hours=True, days=False):
         xlabel = "days"
 
     fig, axs = plt.subplots(2, 3)
+    fig.suptitle("Evolution of orbital elements")
 
 
     for i in range(len(coes)):
@@ -422,12 +423,12 @@ def plot_pert_coes(coes, ts, labels,  hours=True, days=False):
         #z = np.polyfit(ts.flatten(), c[:, 4], 1)
         #p = np.poly1d(z)
         #axs[1, 1].plot(ts, p(ts), label=labels[i])
+        #plot argument of periapsis
         axs[1, 1].plot(ts, c[:, 4], label=labels[i])
         axs[1, 1].legend(loc="upper right")
         # plot longitude of ascending node
         axs[1, 2].plot(ts, c[:, 5], label=labels[i])
         axs[1, 2].legend(loc="upper right")
-        print(labels[i])
 
     axs[0, 0].set_title('semi-major axis vs time')
     axs[0, 0].grid(True)
@@ -449,14 +450,16 @@ def plot_pert_coes(coes, ts, labels,  hours=True, days=False):
     axs[1, 0].set_ylabel("nu (deg)")
     axs[1, 0].set_xlabel(xlabel)
 
-    axs[1, 1].set_title('apsidal rotation')
+    axs[1, 1].set_title('argument of periapsis vs time')
     axs[1, 1].grid(True)
     axs[1, 1].set_ylabel("aop (deg)")
     axs[1, 1].set_xlabel(xlabel)
 
-    axs[1, 2].set_title('nodal regression')
+    axs[1, 2].set_title('longitude of ascending node vs time')
     axs[1, 2].grid(True)
     axs[1, 2].set_ylabel("lan (deg)")
     axs[1, 2].set_xlabel(xlabel)
+
+
 
     plt.show()

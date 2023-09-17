@@ -44,4 +44,4 @@ elems.append(coes2)
 
 labels=['j2', 'j2+moon']
 
-t.plot_pert_coes(elems, ts, labels)
+t.plot_pert_coes(elems, ts, labels, days=True)

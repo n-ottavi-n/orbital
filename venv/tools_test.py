@@ -22,7 +22,7 @@ spice.furnsh('spice_lunar/earth_moon_kernel.txt')
 
 t0='Sep 17, 2023, 00:00 UTC'
 tf='Sep 18, 2023, 00:00 UTC'
-states, names = t.n_tle2coes("data/molniya.txt", 1, t0)
+states, names = t.n_tle2coes("data/molniya.txt", 3, t0)
 
 
 states0=np.array(states, dtype=float)
