@@ -5,8 +5,8 @@ import math
 from scipy.optimize import fsolve
 import re
 import matplotlib.animation as animation
-import datetime
-
+import datetime as date
+from datetime import datetime
 
 def plot_3d(rs, cb, show_plot=False, save_plot=False, au_units=False):
     fig = plt.figure(figsize=(10, 10))
@@ -256,7 +256,7 @@ def n_tle2coes(filename, n_objects, t0, mu=planetary_data.earth['mu']):
 
         #days between now and epoch
         es_epoch=float(line1[3]) #element set epoch
-        curr_epoch=get_current_epoch() # now
+        curr_epoch=get_current_epoch(t0) # now
         #current mean anomaly
         ma_now=(ma+(curr_epoch-es_epoch)*mm*360)%360
         T = (1 / mm) * 24 * 3600
@@ -369,12 +369,17 @@ def plot_n_orbits_animate(rs, step_t, labels, cb, show_plot=False, save=False, a
         ani.save('matplot003.gif', writer='imagemagick', fps=30)
         print("saved!")
 
-def get_current_epoch():
-    t0 = datetime.datetime.now()
-    yr = t0.year % 100
-    day_of_year = t0.timetuple().tm_yday  # returns 1 for January 1st
+def get_current_epoch(t0):
+    '''
+    @param t0: str format='Sep 17, 2023, 00:00 UTC'
+    @return: float time in format= yyddd.fraction of days
+    exemple: Jan 14 2022 12:00 UTC = 22014.5
+    '''
+    start = datetime.strptime(t0, '%b %d, %Y, %H:%M %Z')
+    yr = start.year % 100
+    day_of_year = start.timetuple().tm_yday  # returns 1 for January 1st
 
-    dt = datetime.timedelta(hours=t0.hour, minutes=t0.minute, seconds=t0.second)
+    dt = date.timedelta(hours=start.hour, minutes=start.minute, seconds=start.second)
     secs_per_day = 24 * 60 * 60  # hours * mins * secs
     frac_day = dt.total_seconds() / secs_per_day
     res = yr * 1000 + day_of_year + frac_day
