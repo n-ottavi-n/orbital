@@ -2,7 +2,7 @@
 KERNELS_TO_LOAD=(
 'spice_solar_system\codes_300ast_20100725.bsp',
 'spice_solar_system\codes_300ast_20100725.tf'
-'spice_solar_system\de440.bsp',
+'../venv/spice_lunar/de440.bsp',
 'spice_solar_system\latest_leapseconds.tls',
 'spice_solar_system\naif0009.tls',
 'spice_solar_system\mro_cruise.bsp',

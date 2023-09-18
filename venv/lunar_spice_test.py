@@ -21,14 +21,23 @@ dt=(etTwo-etOne)/step
 # get times
 times = [x*(etTwo-etOne)/step + etOne for x in range(step)]
 
+positions=[]
+
 positions_m, lightTimes = spice.spkpos('MOON', times, 'J2000', 'NONE', 'EARTH BARYCENTER')
-print(positions_m)
+positions_clem, lightTimes = spice.spkpos('CLEMENTINE', times, 'J2000', 'NONE', 'EARTH BARYCENTER')
+
+
 #perturbation
 perts=['moon']
 
-positions=np.array([positions_m])
-labels=['moon']
+positions_m=np.array(positions_m)
+positions_clem=np.array(positions_clem)
+positions.append(positions_m)
+positions.append(positions_clem)
+
+
+labels=['moon', 'clementine']
 # Clean up the kernels
 spice.kclear()
 
-#t.plot_n_orbits_animate(positions, dt, labels, cb=planetary_data.earth, show_plot=True,save=False, interval=0.01)
+t.plot_n_orbits_animate(positions, step_t=dt, labels=labels,cb=planetary_data.earth, show_plot=True, save=False, interval=0.01)

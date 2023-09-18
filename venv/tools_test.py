@@ -9,7 +9,7 @@ from Propagator import null_perts
 import matplotlib.animation as animation
 import spiceypy as spice
 from datetime import datetime
-
+'''
 cb=planetary_data.earth
 
 j2perts=null_perts()
@@ -18,9 +18,10 @@ j2perts['moon']=True
 
 
 spice.furnsh('spice_lunar/earth_moon_kernel.txt')
-
+'''
 
 t0='Sep 17, 2023, 00:00 UTC'
+'''
 tf='Sep 18, 2023, 00:00 UTC'
 states, names = t.n_tle2coes("data/molniya.txt", 3, t0)
 
@@ -45,11 +46,15 @@ for state in states0:
 
 
 
-positions_m, lightTimes = spice.spkpos('MOON', times, 'J2000', 'NONE', 'EARTH')
+positions_m, lightTimes = spice.spkpos('moon', times, 'J2000', 'NONE', 'earth')
 
 positions_m=np.array(positions_m)
 props.append(positions_m)
-
+print(props)
 labels=np.append(labels,'moon')
 
-t.plot_n_orbits_animate(props, step_t=dt, labels=labels,cb=cb, show_plot=True, save=False)
+#t.plot_n_orbits_animate(props, step_t=dt, labels=labels,cb=cb, show_plot=True, save=False)
+'''
+sats=['CHINASAT 18','YAOGAN-40 01C','BEIDOU 3 G4']
+labels, states=t.get_sats_from_file(sats, t0)
+print("labels: {}\nstates: {}".format(labels,states))

@@ -7,6 +7,7 @@ import re
 import matplotlib.animation as animation
 import datetime as date
 from datetime import datetime
+import os
 
 def plot_3d(rs, cb, show_plot=False, save_plot=False, au_units=False):
     fig = plt.figure(figsize=(10, 10))
@@ -273,7 +274,7 @@ def n_tle2coes(filename, n_objects, t0, mu=planetary_data.earth['mu']):
 def perif2eq(rv, coes):
     return 0
 
-def plot_n_orbits_animate(rs, step_t, labels, cb, show_plot=False, save=False, au_units=False, equal_axes=True, interval=0.1):
+def plot_n_orbits_animate(rs, step_t, labels, cb, show_plot=False, save=False, au_units=False, equal_axes=True, interval=0.1, save_file='matplot003.gif'):
     fig = plt.figure(figsize=(12, 12))
     ax = fig.add_subplot(111, projection='3d')
     ax.set_aspect('equal')
@@ -368,7 +369,7 @@ def plot_n_orbits_animate(rs, step_t, labels, cb, show_plot=False, save=False, a
         plt.show()
     if save:
         print("saving...")
-        ani.save('matplot003.gif', writer='imagemagick', fps=30)
+        ani.save(save_file, writer='imagemagick', fps=30)
         print("saved!")
 
 def get_epoch(t0):
@@ -463,3 +464,44 @@ def plot_pert_coes(coes, ts, labels,  hours=False, days=False):
 
 
     plt.show()
+
+def get_sats_from_file(sat_names, t0, mu=planetary_data.earth['mu']):
+    directory = 'data'
+    files=[]
+    labels = []
+    coes_lst = []
+    for filename in os.scandir(directory):
+        if filename.is_file():
+            f = open(filename, "r")
+            for line in f:
+                #try to get a name from line
+                line0 = f.readline().strip().split(' ')
+                name = ' '.join(line0[1:])  # get full name
+                if name in sat_names:
+                    labels.append(name)
+                    #read the next two lines
+                    line1 = f.readline()
+                    line2 = re.split("\s+", f.readline().strip())
+                    coes=get_coes_from_tle(line1, line2, t0, mu)
+                    coes_lst.append(coes)
+            f.close()
+            files.append(filename.path)
+    return labels, coes_lst
+
+def get_coes_from_tle(line1, line2, t0, mu):
+    i = float(line2[2])
+    raan = float(line2[3])
+    e = float('0.' + line2[4])
+    aop = float(line2[5])
+    ma = float(line2[6])  # mean anomaly at epoch
+    mm = float(line2[7])  # mean motion rev/day
+
+    # days between t0 and epoch
+    es_epoch = float(line1[3])  # element set epoch
+    t0_epoch = get_epoch(t0)  # epoch at t0
+
+    ma_t0 = (ma + (t0_epoch - es_epoch) * mm * 360) % 360  # mean anomaly at t0
+
+    T = (1 / mm) * 24 * 3600
+    a = ((mu * (T ** 2)) / (4 * (math.pi ** 2))) ** (1 / 3.0)
+    return [a, e, i, ma_t0, aop, raan]
