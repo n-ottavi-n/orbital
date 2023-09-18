@@ -77,7 +77,7 @@ def plot_3d(rs, cb, show_plot=False, save_plot=False, au_units=False):
     if save_plot:
         plt.savefig(title + '.png')
 
-def plot_n_orbits(rs, labels, cb, show_plot=False, save_plot=False, au_units=False):
+def plot_n_orbits(rs, step_t, labels, cb, show_plot=False, save_plot=False, au_units=False, equal_axes=True, save_file='matplot003.png'):
     fig = plt.figure(figsize=(12, 12))
     ax = fig.add_subplot(111, projection='3d')
     ax.set_aspect('equal')
@@ -143,7 +143,7 @@ def plot_n_orbits(rs, labels, cb, show_plot=False, save_plot=False, au_units=Fal
     if show_plot:
         plt.show()
     if save_plot:
-        plt.savefig(title+'.png', dpi=400)
+        plt.savefig(save_file+'.png', dpi=400)
 
 def coes2rv(coes, deg=False, mu=planetary_data.earth['mu']):
     '''
@@ -282,7 +282,6 @@ def plot_n_orbits_animate(rs, step_t, labels, cb, show_plot=False, save=False, a
     # plot central body
 
     radius=cb['radius']
-
     if au_units:
         radius=radius/1.495978707e8
         rs=rs/1.495978707e8
@@ -466,7 +465,7 @@ def plot_pert_coes(coes, ts, labels,  hours=False, days=False):
     plt.show()
 
 def get_sats_from_file(sat_names, t0, mu=planetary_data.earth['mu']):
-    directory = 'data'
+    directory = '../data'
     files=[]
     labels = []
     coes_lst = []
