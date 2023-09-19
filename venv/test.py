@@ -1,8 +1,5 @@
-dph=4.0/24
-e=0.00016640
+import planetary_data
 
-factor=(1-e**2)**2
+name='sun'
 
-omega_dot=dph/factor
-print(factor)
-print(omega_dot)
+print(planetary_data)

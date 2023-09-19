@@ -10,7 +10,7 @@ sun={
 mercury={
     'name':"mercury",
     'mass':0,
-    'mu':	2.2032e4,
+    'mu':2.2032e4,
     'radius':2439.0,
     'j2':0.00006
 }
@@ -22,7 +22,6 @@ venus={
     'radius':6052.0,
     'j2':0.000027
 }
-
 
 earth={
     'name':"earth",
