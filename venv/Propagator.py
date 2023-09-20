@@ -116,13 +116,19 @@ class Propagator:
             a += 1.5 * self.cb['j2'] * self.cb['mu'] * self.cb['radius'] ** 2 / norm_r ** 4 * np.array([tx, ty, tz])
 
         if self.srp:
+            pressure=4.5*(10**(-6)) # sun pressure at earth in Pa
+            force=pressure*self.sc_data['area']
+            acc=force/self.sc_data['mass']
             d=self.vectors_from_sun[self.steps, :]+r #vector from sun to spacecraft
+            d=d/np.linalg.norm(d)
+            '''
             g1=1e8
             beta=((1+self.sc_data['reflectance'])*g1)/(self.sc_data['mass']/self.sc_data['area'])
-            g=beta/((np.linalg.norm(d)**2)*1000)
-            #print("before: ",a)
+            g=beta/((np.linalg.norm(d)**2))
+            print("g*d: ",g*d)
             a += g*d
-            #print("after: ",a)
+            '''
+            a+=acc*d
             #source: https://ntrs.nasa.gov/api/citations/20080012725/downloads/20080012725.pdf
 
 

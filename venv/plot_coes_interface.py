@@ -7,9 +7,9 @@ import spiceypy as spice
 
 def plot_coes():
     sc_data = {
-        'mass': 5000,  # kg
+        'mass': 100,  # kg
         'reflectance': 0.2,
-        'area': 12  # m²
+        'area': 10  # m²
     }
 
 
@@ -18,11 +18,11 @@ def plot_coes():
     spice.furnsh('../spice_lunar/earth_moon_kernel.txt')
 
     t0 = 'Sep 17, 2023, 00:00 UTC'
-    tf = 'Oct 18, 2023, 00:00 UTC'
-    states, names = t.n_tle2coes("../data/various_leo.txt", 1, t0)
+    tf = 'Dec 17, 2023, 00:00 UTC'
+    states, names = t.n_tle2coes("../data/some_geo.txt", 1, t0)
 
     elems = []
-    # propagate with no perts
+    # propagate with j2 and moon
     perturbations = ['j2',[pd.moon]]
 
     prop1 = Propagator(states[0], 400,spacecraft_data=sc_data, start_date=t0, end_date=tf, coes=True,cb=cb, deg=True, perts=perturbations)

@@ -460,8 +460,6 @@ def plot_pert_coes(coes, ts, labels,  hours=False, days=False):
     axs[1, 2].set_ylabel("lan (deg)")
     axs[1, 2].set_xlabel(xlabel)
 
-
-
     plt.show()
 
 def get_sats_from_file(sat_names, t0, mu=planetary_data.earth['mu']):

@@ -16,4 +16,4 @@ sc_data={
     'area':12 #m²
 }
 
-plot_orbits(sats,bodies,t0,tf, perturbations, central_body=cb, sc_data=sc_data, steps=400, animate=False,show=True)
+plot_orbits(sats,bodies,t0,tf, perturbations, central_body=cb, sc_data=sc_data, steps=400, animate=True,show=True)
