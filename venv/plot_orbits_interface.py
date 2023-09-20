@@ -5,7 +5,7 @@ import planetary_data as pd
 import spiceypy as spice
 
 
-def plot_orbits(satellite_names, bodies, start_date, end_date, perturbations,central_body=pd.earth, steps=400, animate=False, show=False, save=False, save_file='matplot003.gif'):
+def plot_orbits(satellite_names, bodies, start_date, end_date, perturbations,central_body=pd.earth, sc_data={}, steps=400, animate=False, show=False, save=False, save_file='matplot003.gif'):
     '''
     An interface for plotting 3d orbits of any number of satellites and other bodies if they have a name and their tle is in a file in the /venv/data folder,
     plots can be animated and saved
@@ -28,12 +28,6 @@ def plot_orbits(satellite_names, bodies, start_date, end_date, perturbations,cen
     #initialize propagators array
     props=[]
 
-    '''
-    #get perturbations
-    perts = null_perts()
-    for p in perturbations:
-        perts[p]=True
-        '''
 
     if central_body['name']=='earth':
         spice.furnsh('../spice_lunar/earth_moon_kernel.txt')
@@ -49,7 +43,7 @@ def plot_orbits(satellite_names, bodies, start_date, end_date, perturbations,cen
 
     #loop through propagators
     for state in states:
-        prop = Propagator(state, steps, start_date=start_date, end_date=end_date, coes=True, deg=True, perts=perturbations)
+        prop = Propagator(state, steps, start_date=start_date, end_date=end_date, coes=True, deg=True, perts=perturbations, spacecraft_data=sc_data)
         times = prop.times
         prop.propagate()
         props.append(prop.rs)

@@ -4,16 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1b77b4e7-88cf-4253-9100-3955295aaa41" name="Changes" comment="plot_orbits_interface fixed and tested">
-      <change beforePath="$PROJECT_DIR$/.idea/orbital.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/orbital.iml" afterDir="false" />
+    <list default="true" id="1b77b4e7-88cf-4253-9100-3955295aaa41" name="Changes" comment="perturbation handling updated in propagator,&#10;some clean_up,&#10;old tests non-functional">
+      <change afterPath="$PROJECT_DIR$/venv/plot_coes_interface.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/tests/coes_interface_test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/venv/Propagator.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Propagator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/planetary_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/planetary_data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/venv/plot_orbits_interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/plot_orbits_interface.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/prop_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/tests/prop_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/venv/tests/interface_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/tests/interface_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/tests/tools_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/tests/tools_test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,7 +83,49 @@
       <recent name="C:\Users\notta\PycharmProjects\orbital\venv\data" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.interface_test (1)">
+  <component name="RunManager" selected="Python.coes_interface_test">
+    <configuration name="Propagator" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="orbital" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/venv" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/Propagator.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="coes_interface_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="orbital" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/venv/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/tests/coes_interface_test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="interface_test (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="orbital" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -108,7 +147,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="plot_orbits_interface" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="plot_coes_interface" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="orbital" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -120,28 +159,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/plot_orbits_interface.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="spice_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="orbital" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/venv/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/tests/spice_test.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/plot_coes_interface.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -171,41 +189,20 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="tools" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="orbital" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/venv" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/tools.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <list>
+      <item itemvalue="Python.Propagator" />
+      <item itemvalue="Python.coes_interface_test" />
+      <item itemvalue="Python.plot_coes_interface" />
       <item itemvalue="Python.test" />
       <item itemvalue="Python.interface_test (1)" />
-      <item itemvalue="Python.plot_orbits_interface" />
-      <item itemvalue="Python.spice_test" />
-      <item itemvalue="Python.tools" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.coes_interface_test" />
+        <item itemvalue="Python.Propagator" />
+        <item itemvalue="Python.plot_coes_interface" />
         <item itemvalue="Python.interface_test (1)" />
         <item itemvalue="Python.test" />
-        <item itemvalue="Python.spice_test" />
-        <item itemvalue="Python.plot_orbits_interface" />
-        <item itemvalue="Python.tools" />
       </list>
     </recent_temporary>
   </component>
@@ -274,7 +271,15 @@
       <option name="project" value="LOCAL" />
       <updated>1695035874570</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="perturbation handling updated in propagator,&#10;some clean_up,&#10;old tests non-functional">
+      <option name="closed" value="true" />
+      <created>1695138724762</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1695138724762</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -301,6 +306,7 @@
     <MESSAGE value="clean up of plotting" />
     <MESSAGE value="added plot_orbits_interface" />
     <MESSAGE value="plot_orbits_interface fixed and tested" />
-    <option name="LAST_COMMIT_MESSAGE" value="plot_orbits_interface fixed and tested" />
+    <MESSAGE value="perturbation handling updated in propagator,&#10;some clean_up,&#10;old tests non-functional" />
+    <option name="LAST_COMMIT_MESSAGE" value="perturbation handling updated in propagator,&#10;some clean_up,&#10;old tests non-functional" />
   </component>
 </project>

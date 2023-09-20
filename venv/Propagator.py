@@ -13,7 +13,7 @@ class Propagator:
         if cartesian: [x0,y0,z0,vx0,vy0,vz0]
         if keplerian: a,e,i,m,aop,raan
     '''
-    def __init__(self, state0, n_steps, start_date='Sep 16, 2023, 00:00 UTC', end_date='Sep 17, 2023, 00:00 UTC', coes=False, deg=False, cb=pd.earth, perts=[], integrator='dopri5'):
+    def __init__(self, state0, n_steps, start_date='Sep 16, 2023, 00:00 UTC', end_date='Sep 17, 2023, 00:00 UTC',spacecraft_data={}, coes=False, deg=False, cb=pd.earth, perts=[], integrator='dopri5'):
         '''
         @param state0: if cartesian: [x0,y0,z0,vx0,vy0,vz0]  if keplerian: [a,e,i,m,aop,raan]
         @param n_steps: number of timesteps for integration
@@ -48,9 +48,11 @@ class Propagator:
 
         self.srp=False
         if "srp" in perts:
+            self.vectors_from_sun, lightTimes =spice.spkpos(self.cb['name'], self.times, 'J2000', 'NONE', "SUN")
             self.srp=True
 
         self.pert_bodies = True
+        self.bodies=[]
         #check if list of perturbing bodies is present then store it.
         for pert in perts:
             if type(pert) is list:
@@ -59,17 +61,14 @@ class Propagator:
 
         self.body_names=[]
         self.r_cb2nb_lst=[]
-        for body in self.bodies:
-            self.body_names.append(body['name']) #for future debugging
-            r_cb2nb, lightTimes = spice.spkpos(body['name'], self.times, 'J2000', 'NONE', cb['name'])
-            self.r_cb2nb_lst.append(r_cb2nb)
+        if self.bodies:
+            for body in self.bodies:
+                self.body_names.append(body['name']) #for future debugging
+                r_cb2nb, lightTimes = spice.spkpos(body['name'], self.times, 'J2000', 'NONE', cb['name'])
+                self.r_cb2nb_lst.append(r_cb2nb)
 
-        '''
-        if self.perts['moon']:
-            self.mu_moon = planetary_data.moon['mu']
-            #get moon position vectors from start to end dates
-            self.r_cb2nb, lightTimes = spice.spkpos('MOON', self.times, 'J2000', 'NONE', 'EARTH BARYCENTER')
-            '''
+        self.sc_data=spacecraft_data
+
 
     def propagate(self):
         print("propagating...")
@@ -115,6 +114,16 @@ class Propagator:
             ty = r[1] / norm_r * (5 * z2 / r2 - 1)
             tz = r[2] / norm_r * (5 * z2 / r2 - 3)
             a += 1.5 * self.cb['j2'] * self.cb['mu'] * self.cb['radius'] ** 2 / norm_r ** 4 * np.array([tx, ty, tz])
+
+        if self.srp:
+            d=self.vectors_from_sun[self.steps, :]+r #vector from sun to spacecraft
+            g1=1e8
+            beta=((1+self.sc_data['reflectance'])*g1)/(self.sc_data['mass']/self.sc_data['area'])
+            g=beta/((np.linalg.norm(d)**2)*1000)
+            #print("before: ",a)
+            a += g*d
+            #print("after: ",a)
+            #source: https://ntrs.nasa.gov/api/citations/20080012725/downloads/20080012725.pdf
 
 
         if self.pert_bodies:
