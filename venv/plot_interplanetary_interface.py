@@ -5,11 +5,10 @@ import planetary_data as pd
 import spiceypy as spice
 
 
-def plot_orbits(satellite_names, bodies, start_date, end_date, perturbations,central_body=pd.earth, sc_data={}, steps=400, animate=False, show=False, save=False, save_file='matplot003.gif'):
+def plot_trajectory(data, bodies, start_date, end_date, perturbations,central_body=pd.sun, sc_data={}, steps=1000, animate=False, show=False, save=False, save_file='matplot003.gif'):
     '''
-    An interface for plotting 3d orbits of any number of satellites and other bodies if they have a name and their tle is in a file in the /venv/data folder,
-    plots can be animated and saved
-    @param satellite_names: list of sat names as they appear in /venv/data txt files
+    An interface for plotting solar system trajectories from state vectors, plots can be animated and saved
+    @param data: [[labels], [[x,y,z,vx,vy,vz]]]
     @param bodies: bodies to plot using NASA SPICE data
     @param start_date: start of propagation
     @param end_date: end of propagation
@@ -23,16 +22,12 @@ def plot_orbits(satellite_names, bodies, start_date, end_date, perturbations,cen
     @return: None
     '''
     # get list of coes and labels from satellite_names
-    labels, states = t.get_sats_from_file(satellite_names, start_date)
-
+    labels = data[0]
+    states = data[1]
     #initialize propagators array
     props=[]
 
-
-    if central_body['name']=='earth':
-        spice.furnsh('../spice_lunar/earth_moon_kernel.txt')
-    else:
-        spice.furnsh('../spice_solar_system/solar_system_kernel.txt')
+    spice.furnsh('../spice_solar_system/solar_system_kernel.txt')
 
     etOne = spice.str2et(start_date)
     etTwo = spice.str2et(end_date)
@@ -43,19 +38,19 @@ def plot_orbits(satellite_names, bodies, start_date, end_date, perturbations,cen
 
     #loop through propagators
     for state in states:
-        prop = Propagator(state, steps, start_date=start_date, end_date=end_date, coes=True, deg=True, perts=perturbations, spacecraft_data=sc_data)
+        prop = Propagator(state, steps, start_date=start_date, end_date=end_date, coes=False, deg=True,cb=central_body, perts=perturbations, spacecraft_data=sc_data)
         times = prop.times
         prop.propagate()
         props.append(prop.rs)
 
+    obs = 'SOLAR SYSTEM BARYCENTER'
 
-    obs = central_body['name']+' barycenter'
 
     states_bodies=[]
     #get states of other bodies to plot e.g. perturbating bodies
     for body in bodies:
 
-        positions, lightTimes = spice.spkpos(body, times, 'J2000', 'NONE', obs)
+        positions, lightTimes = spice.spkpos(body, times, 'ECLIPJ2000', 'NONE', obs)
         # append states to propagator states
         props.append(positions)
         # append other bodies labels to satellite names
@@ -63,10 +58,13 @@ def plot_orbits(satellite_names, bodies, start_date, end_date, perturbations,cen
 
     props=np.array(props)
 
+
     spice.kclear()
 
     #set distance to AU if central_body=sun
     au=False
+    if central_body['name']=='sun':
+        au=True
 
     #set plot title
     plot_title=''

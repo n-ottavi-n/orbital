@@ -13,7 +13,7 @@ class Propagator:
         if cartesian: [x0,y0,z0,vx0,vy0,vz0]
         if keplerian: a,e,i,m,aop,raan
     '''
-    def __init__(self, state0, n_steps, start_date='Sep 16, 2023, 00:00 UTC', end_date='Sep 17, 2023, 00:00 UTC',spacecraft_data={}, coes=False, deg=False, cb=pd.earth, perts=[], integrator='dopri5'):
+    def __init__(self, state0, n_steps, start_date='Sep 16, 2023, 00:00 UTC', end_date='Sep 17, 2023, 00:00 UTC',spacecraft_data={}, coes=False, deg=False, cb=pd.earth, perts=[], integrator='lsoda'):
         '''
         @param state0: if cartesian: [x0,y0,z0,vx0,vy0,vz0]  if keplerian: [a,e,i,m,aop,raan]
         @param n_steps: number of timesteps for integration
@@ -88,7 +88,8 @@ class Propagator:
         while self.solver.successful() and self.steps < self.n_steps:
             self.solver.integrate((self.solver.t + self.dt))
             self.ts[self.steps]=self.solver.t
-            self.ys[self.steps]=self.solver.y
+            new_ys=self.solver.y
+            self.ys[self.steps]=new_ys
             self.steps += 1
 
         self.rs=self.ys[:,:3]
@@ -121,13 +122,6 @@ class Propagator:
             acc=force/self.sc_data['mass']
             d=self.vectors_from_sun[self.steps, :]+r #vector from sun to spacecraft
             d=d/np.linalg.norm(d)
-            '''
-            g1=1e8
-            beta=((1+self.sc_data['reflectance'])*g1)/(self.sc_data['mass']/self.sc_data['area'])
-            g=beta/((np.linalg.norm(d)**2))
-            print("g*d: ",g*d)
-            a += g*d
-            '''
             a+=acc*d
             #source: https://ntrs.nasa.gov/api/citations/20080012725/downloads/20080012725.pdf
 

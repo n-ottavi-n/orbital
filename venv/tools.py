@@ -274,7 +274,7 @@ def n_tle2coes(filename, n_objects, t0, mu=planetary_data.earth['mu']):
 def perif2eq(rv, coes):
     return 0
 
-def plot_n_orbits_animate(rs, step_t, labels, cb, show_plot=False, save=False, au_units=False, equal_axes=True, interval=0.1, save_file='matplot003.gif'):
+def plot_n_orbits_animate(rs, step_t, labels, cb, show_plot=False, save=False, au_units=False, equal_axes=True, interval=0.01, save_file='matplot003.mp4'):
     fig = plt.figure(figsize=(12, 12))
     ax = fig.add_subplot(111, projection='3d')
     ax.set_aspect('equal')
@@ -368,7 +368,7 @@ def plot_n_orbits_animate(rs, step_t, labels, cb, show_plot=False, save=False, a
         plt.show()
     if save:
         print("saving...")
-        ani.save(save_file, writer='imagemagick', fps=30)
+        ani.save(save_file, writer='pillow', fps=30)
         print("saved!")
 
 def get_epoch(t0):

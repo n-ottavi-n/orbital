@@ -17,15 +17,15 @@ def plot_coes():
 
     spice.furnsh('../spice_lunar/earth_moon_kernel.txt')
 
-    t0 = 'Sep 17, 2023, 00:00 UTC'
-    tf = 'Dec 17, 2023, 00:00 UTC'
+    t0 = 'Sep 17, 2022, 00:00 UTC'
+    tf = 'Dec 17, 2022, 00:00 UTC'
     states, names = t.n_tle2coes("../data/some_geo.txt", 1, t0)
 
     elems = []
     # propagate with j2 and moon
-    perturbations = ['j2',[pd.moon]]
+    perturbations = []
 
-    prop1 = Propagator(states[0], 400,spacecraft_data=sc_data, start_date=t0, end_date=tf, coes=True,cb=cb, deg=True, perts=perturbations)
+    prop1 = Propagator(states[0], 1000,spacecraft_data=sc_data, start_date=t0, end_date=tf, coes=True,cb=cb, deg=True, perts=perturbations)
     prop1.propagate()
     prop1.calculate_coes()
     coes1 = prop1.coes
@@ -34,9 +34,9 @@ def plot_coes():
     elems.append(coes1)
 
     # propagate srp perts
-    perturbations = ['j2','srp',[pd.moon]]
+    perturbations = ['srp']
 
-    prop2 = Propagator(states[0], 400,spacecraft_data=sc_data, start_date=t0, end_date=tf, coes=True,cb=cb, deg=True, perts=perturbations)
+    prop2 = Propagator(states[0], 1000,spacecraft_data=sc_data, start_date=t0, end_date=tf, coes=True,cb=cb, deg=True, perts=perturbations)
     prop2.propagate()
     prop2.calculate_coes()
     coes2 = prop2.coes

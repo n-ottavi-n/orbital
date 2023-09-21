@@ -50,7 +50,7 @@ mars={
 }
 
 jupiter={
-    'name':"jupiter",
+    'name':"jupiter barycenter",
     'mass':0,
     'mu':1.268e8,
     'radius':71492.0,
