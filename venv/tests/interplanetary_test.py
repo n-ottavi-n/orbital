@@ -18,4 +18,6 @@ sc_data={
 }
 
 
+
+
 plot_trajectory(states,bodies,t0,tf, perturbations, central_body=cb, sc_data=sc_data, steps=100000, animate=False,show=True, save=False)
