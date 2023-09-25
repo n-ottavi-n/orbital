@@ -10,6 +10,7 @@ KERNELS_TO_LOAD=(
 '../spice_solar_system\vg1_v02.tf',
 '../spice_solar_system\vg2_v02.tf',
 '../spice_solar_system\Voyager_1.a54206u_V0.2_merged.bsp',
-'../spice_solar_system\Voyager_2.m05016u.merged.bsp'
+'../spice_solar_system\Voyager_2.m05016u.merged.bsp',
+'../spice_solar_system/20099942.bsp'
 )
 \begintext
