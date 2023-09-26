@@ -8,11 +8,7 @@ import matplotlib.animation as animation
 import spiceypy as spice
 
 class Propagator:
-    '''
-    inputs:
-        if cartesian: [x0,y0,z0,vx0,vy0,vz0]
-        if keplerian: a,e,i,m,aop,raan
-    '''
+
     def __init__(self, state0, n_steps, start_date='Sep 16, 2023, 00:00 UTC', end_date='Sep 17, 2023, 00:00 UTC',spacecraft_data={}, coes=False, deg=False, cb=pd.earth, perts=[], integrator='lsoda'):
         '''
         @param state0: if cartesian: [x0,y0,z0,vx0,vy0,vz0]  if keplerian: [a,e,i,m,aop,raan]
