@@ -8,6 +8,7 @@ import matplotlib.animation as animation
 import datetime as date
 from datetime import datetime
 import os
+import pandas as pd
 
 def plot_3d(rs, cb, show_plot=False, save_plot=False, au_units=False):
     fig = plt.figure(figsize=(10, 10))
@@ -140,10 +141,13 @@ def plot_n_orbits(rs, step_t, labels, cb, show_plot=False, save_plot=False, au_u
 
     plt.legend()
 
+    #return fig
+
     if show_plot:
         plt.show()
     if save_plot:
         plt.savefig(save_file+'.png', dpi=400)
+
 
 def coes2rv(coes, deg=False, mu=planetary_data.earth['mu']):
     '''
@@ -463,6 +467,7 @@ def plot_pert_coes(coes, ts, labels,  hours=False, days=False):
     plt.show()
 
 def get_sats_from_file(sat_names, t0, mu=planetary_data.earth['mu']):
+    print(sat_names)
     directory = '../data'
     files=[]
     labels = []
@@ -502,3 +507,41 @@ def get_coes_from_tle(line1, line2, t0, mu):
     T = (1 / mm) * 24 * 3600
     a = ((mu * (T ** 2)) / (4 * (math.pi ** 2))) ** (1 / 3.0)
     return [a, e, i, ma_t0, aop, raan]
+
+def read_tle_file(file_path):
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+
+    # Extract satellite name from the first line
+    satellite_name = lines[0][2:].strip()
+
+    return satellite_name
+
+def read_tle_file(file_path):
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+
+    # Extract satellite name from the first line
+    satellite_names = [line[2:].strip() for line in lines if line.startswith('0')]
+    return satellite_names
+
+def get_satellite_names(folder_path):
+    satellite_names = []
+
+    # Iterate over all files in the folder
+    for filename in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, filename)
+
+        # Check if the item is a file and not a subdirectory
+        if os.path.isfile(file_path):
+            satellite_names.extend(read_tle_file(file_path))
+
+    return satellite_names
+
+def create_dataframe_and_write_to_csv(satellite_names):
+    # Create a DataFrame with the satellite names
+    df = pd.DataFrame({'Satellite Names': satellite_names})
+
+    return df
+
+

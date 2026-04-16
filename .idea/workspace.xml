@@ -4,14 +4,24 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1b77b4e7-88cf-4253-9100-3955295aaa41" name="Changes" comment="added lambert solver">
-      <change afterPath="$PROJECT_DIR$/venv/lambert_interface.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/venv/tests/lambert_int_test.py" afterDir="false" />
+    <list default="true" id="1b77b4e7-88cf-4253-9100-3955295aaa41" name="Changes" comment="added lambert interface, changed interplanetary interface to class">
+      <change afterPath="$PROJECT_DIR$/venv/apps/earth_app.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/optimizer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/spice_solar_system/naif0012.tls" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/tests/optimizer_test.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/tests/porkchop.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/trajectory_utils.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/Propagator.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/Propagator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/plot_interplanetary_interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/plot_interplanetary_interface.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/lambert_interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/lambert_interface.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/lambert_tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/lambert_tools.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/plot_interplanetary_interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/interplanetary_interface.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/plot_orbits_interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/plot_orbits_interface.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/spice_solar_system/solar_system_kernel.txt" beforeDir="false" afterPath="$PROJECT_DIR$/venv/spice_solar_system/solar_system_kernel.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/tests/interface_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/tests/interface_test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/venv/tests/interplanetary_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/tests/interplanetary_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/tests/lambert_int_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/tests/lambert_int_test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/venv/tests/lambert_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/tests/lambert_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/tools.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,7 +80,7 @@
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/notta/PycharmProjects/orbital/venv&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/notta/PycharmProjects/orbital/venv/apps&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyIntegratedToolsModulesConfigurable&quot;
   }
 }</component>
@@ -79,33 +89,13 @@
       <recent name="C:\Users\notta\PycharmProjects\orbital\venv\spice_lunar" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\notta\PycharmProjects\orbital\venv" />
       <recent name="C:\Users\notta\PycharmProjects\orbital\venv\tests" />
+      <recent name="C:\Users\notta\PycharmProjects\orbital\venv\apps" />
+      <recent name="C:\Users\notta\PycharmProjects\orbital\venv" />
       <recent name="C:\Users\notta\PycharmProjects\orbital\venv\data" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.lambert_int_test">
-    <configuration name="interplanetary_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="orbital" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/venv/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/tests/interplanetary_test.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.porkchop (1)">
     <configuration name="lambert_int_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="orbital" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -127,7 +117,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="lambert_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="optimizer" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="orbital" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/venv" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/optimizer.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="optimizer_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="orbital" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -139,7 +150,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/tests/lambert_test.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/tests/optimizer_test.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -148,7 +159,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="lambert_tools" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="porkchop (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="orbital" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/venv/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/tests/porkchop.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="porkchop" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="orbital" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -160,28 +192,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/lambert_tools.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="plot_interplanetary_interface" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="orbital" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/venv" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/plot_interplanetary_interface.py" />
+      <option name="SCRIPT_NAME" value="C:\Users\notta\PycharmProjects\orbital\venv\tests\porkchop.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -191,19 +202,19 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Python.optimizer" />
+      <item itemvalue="Python.optimizer_test" />
+      <item itemvalue="Python.porkchop" />
+      <item itemvalue="Python.porkchop (1)" />
       <item itemvalue="Python.lambert_int_test" />
-      <item itemvalue="Python.plot_interplanetary_interface" />
-      <item itemvalue="Python.lambert_test" />
-      <item itemvalue="Python.lambert_tools" />
-      <item itemvalue="Python.interplanetary_test" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.porkchop (1)" />
+        <item itemvalue="Python.optimizer_test" />
         <item itemvalue="Python.lambert_int_test" />
-        <item itemvalue="Python.lambert_test" />
-        <item itemvalue="Python.interplanetary_test" />
-        <item itemvalue="Python.plot_interplanetary_interface" />
-        <item itemvalue="Python.lambert_tools" />
+        <item itemvalue="Python.porkchop" />
+        <item itemvalue="Python.optimizer" />
       </list>
     </recent_temporary>
   </component>
@@ -328,7 +339,15 @@
       <option name="project" value="LOCAL" />
       <updated>1695645704557</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="added lambert interface, changed interplanetary interface to class">
+      <option name="closed" value="true" />
+      <created>1695723376688</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1695723376688</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -360,6 +379,7 @@
     <MESSAGE value="added srp, effect too large" />
     <MESSAGE value="added plot_trajectory interface" />
     <MESSAGE value="added lambert solver" />
-    <option name="LAST_COMMIT_MESSAGE" value="added lambert solver" />
+    <MESSAGE value="added lambert interface, changed interplanetary interface to class" />
+    <option name="LAST_COMMIT_MESSAGE" value="added lambert interface, changed interplanetary interface to class" />
   </component>
 </project>

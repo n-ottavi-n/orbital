@@ -8,6 +8,21 @@ import spiceypy as spice
 class interplanetary_interface:
 
     def __init__(self,data, bodies, start_date, end_date, perturbations,central_body=pd.sun, sc_data={}, steps=1000,):
+        '''
+        An interface for plotting solar system trajectories from state vectors, plots can be animated and saved
+        @param data: [[labels], [[x,y,z,vx,vy,vz]]] initial conditions of spcecraft
+        @param bodies: bodies to plot using NASA SPICE data
+        @param start_date: start of propagation
+        @param end_date: end of propagation
+        @param perturabtions: list of perturbations to account for ['j2', 'srp', [pd.jupiter,pd.moon,....]] bodies must be plantery_data objects
+        @param central_body: planetary_data object
+        @param steps: number of time steps for propagation
+        @param animate: if True makes an animated 3d plot
+        @param show: if True shows the plot
+        @param save: if True saves the file under the name save_file
+        @param save_file: see above
+        @return: None
+        '''
         self.data=data,
         self.bodies=bodies,
         self.start_date=start_date
@@ -20,13 +35,6 @@ class interplanetary_interface:
 
     def plot_trajectory(self, steps=1000, animate=False, show=False, save=False, save_file='matplot003.gif'):
         '''
-        An interface for plotting solar system trajectories from state vectors, plots can be animated and saved
-        @param data: [[labels], [[x,y,z,vx,vy,vz]]] initial conditions
-        @param bodies: bodies to plot using NASA SPICE data
-        @param start_date: start of propagation
-        @param end_date: end of propagation
-        @param perturabtions: list of perturbations to account for ['j2', 'srp', [pd.jupiter,pd.moon,....]] bodies must be plantery_data objects
-        @param central_body: planetary_data object
         @param steps: number of time steps for propagation
         @param animate: if True makes an animated 3d plot
         @param show: if True shows the plot
@@ -68,7 +76,6 @@ class interplanetary_interface:
             labels.append(body)
 
         self.props=np.array(props)
-
 
         #set distance to AU if central_body=sun
         au=False

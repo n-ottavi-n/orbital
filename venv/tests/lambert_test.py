@@ -3,7 +3,7 @@ import planetary_data
 from lambert_tools import lambert_uv
 import spiceypy as spice
 import numpy as np
-from plot_interplanetary_interface import interplanetary_interface
+from interplanetary_interface import interplanetary_interface
 
 
 spice.furnsh('../spice_solar_system/solar_system_kernel.txt')
@@ -56,7 +56,7 @@ xv=np.append(x0,v0)
 xv=xv.tolist()
 
 states=[['spacecraft'],[xv]]
-origin_v=(props[0][1]-props[0][0])/dt #obital velocity vector at origin
+origin_v=(props[0][1]-props[0][0])/dt #orbital velocity vector at origin
 deltaV=v0-origin_v #deltaV vector at origin
 print("deltaV departure: {} km/s\ntotal: {} km/s".format(deltaV, np.linalg.norm(deltaV)))
 

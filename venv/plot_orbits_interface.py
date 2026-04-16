@@ -24,7 +24,7 @@ def plot_orbits(satellite_names, bodies, start_date, end_date, perturbations,cen
     '''
     # get list of coes and labels from satellite_names
     labels, states = t.get_sats_from_file(satellite_names, start_date)
-
+    #print(states)
     #initialize propagators array
     props=[]
 
@@ -48,6 +48,7 @@ def plot_orbits(satellite_names, bodies, start_date, end_date, perturbations,cen
         prop.propagate()
         props.append(prop.rs)
 
+    #print(props)
 
     obs = central_body['name']+' barycenter'
 
@@ -66,15 +67,19 @@ def plot_orbits(satellite_names, bodies, start_date, end_date, perturbations,cen
     spice.kclear()
 
     #set distance to AU if central_body=sun
-    au=False
+    au = False
 
     #set plot title
     plot_title=''
 
     #call the required plot
+    #return t.plot_n_orbits(props, step_t=dt, labels=labels, cb=central_body, show_plot=show, save_plot=save, au_units=au, save_file=save_file)
+    '''
     if animate:
         t.plot_n_orbits_animate(props, step_t=dt, labels=labels, cb=central_body, show_plot=show, save=save, au_units=au, save_file=save_file)
     else:
         t.plot_n_orbits(props, step_t=dt, labels=labels, cb=central_body, show_plot=show, save_plot=save, au_units=au, save_file=save_file)
+'''
+    t.plot_n_orbits_animate(props, step_t=dt, labels=labels, cb=central_body, show_plot=show, save=save, au_units=au, save_file=save_file)
 
 
