@@ -4,24 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1b77b4e7-88cf-4253-9100-3955295aaa41" name="Changes" comment="added lambert interface, changed interplanetary interface to class">
-      <change afterPath="$PROJECT_DIR$/venv/apps/earth_app.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/venv/optimizer.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/venv/spice_solar_system/naif0012.tls" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/venv/tests/optimizer_test.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/venv/tests/porkchop.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/venv/trajectory_utils.py" afterDir="false" />
+    <list default="true" id="1b77b4e7-88cf-4253-9100-3955295aaa41" name="Changes" comment="new lambert solver, added prokchop plots, some cleanup">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/venv/lambert_interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/lambert_interface.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/venv/lambert_tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/lambert_tools.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/plot_interplanetary_interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/interplanetary_interface.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/plot_orbits_interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/plot_orbits_interface.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/spice_solar_system/solar_system_kernel.txt" beforeDir="false" afterPath="$PROJECT_DIR$/venv/spice_solar_system/solar_system_kernel.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/tests/interface_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/tests/interface_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/tests/interplanetary_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/tests/interplanetary_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/optimizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/optimizer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/venv/tests/lambert_int_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/tests/lambert_int_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/tests/lambert_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/tests/lambert_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/tools.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/tests/optimizer_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/tests/optimizer_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/tests/porkchop.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/tests/porkchop.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/trajectory_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/trajectory_utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -95,7 +86,7 @@
       <recent name="C:\Users\notta\PycharmProjects\orbital\venv\data" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.porkchop (1)">
+  <component name="RunManager" selected="Python.lambert_int_test">
     <configuration name="lambert_int_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="orbital" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -210,9 +201,9 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.porkchop (1)" />
-        <item itemvalue="Python.optimizer_test" />
         <item itemvalue="Python.lambert_int_test" />
+        <item itemvalue="Python.optimizer_test" />
+        <item itemvalue="Python.porkchop (1)" />
         <item itemvalue="Python.porkchop" />
         <item itemvalue="Python.optimizer" />
       </list>
@@ -347,7 +338,15 @@
       <option name="project" value="LOCAL" />
       <updated>1695723376688</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="new lambert solver, added prokchop plots, some cleanup">
+      <option name="closed" value="true" />
+      <created>1776350869255</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1776350869255</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -355,11 +354,38 @@
     <option featureType="com.intellij.fileTypeFactory" implementationName="*.cfg" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="main" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
     <option name="TAB_STATES">
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="main" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
@@ -380,6 +406,7 @@
     <MESSAGE value="added plot_trajectory interface" />
     <MESSAGE value="added lambert solver" />
     <MESSAGE value="added lambert interface, changed interplanetary interface to class" />
-    <option name="LAST_COMMIT_MESSAGE" value="added lambert interface, changed interplanetary interface to class" />
+    <MESSAGE value="new lambert solver, added prokchop plots, some cleanup" />
+    <option name="LAST_COMMIT_MESSAGE" value="new lambert solver, added prokchop plots, some cleanup" />
   </component>
 </project>

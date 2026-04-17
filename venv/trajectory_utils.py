@@ -122,3 +122,9 @@ def lambert_branches(r0, r, dt, mu, prograde=True):
 def compute_c3(v0, v_planet):
     v_inf = v0 - v_planet
     return np.dot(v_inf, v_inf)
+
+def hohmann_phase_angle(a1, a2, mu):
+    t_H = np.pi * np.sqrt((a1 + a2)**3 / (8 * mu))
+    n2 = np.sqrt(mu / a2**3)
+    phi = np.pi - n2 * t_H
+    return np.degrees(phi)

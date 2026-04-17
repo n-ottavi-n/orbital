@@ -3,6 +3,7 @@ import spiceypy as spice
 from datetime import timedelta, datetime
 from trajectory_utils import lambert_branches
 from trajectory_utils import compute_c3
+from trajectory_utils import hohmann_phase_angle
 
 
 def optimize_c3(lambert_interface_class, origin, dest, base_start, base_arrival,
@@ -29,6 +30,35 @@ def optimize_c3(lambert_interface_class, origin, dest, base_start, base_arrival,
 
             if arrival_et <= start_et:
                 continue
+
+            ##### PHASE ANGLE FILTERING speeds up everything #########
+            # get positions first
+            r1, _ = spice.spkpos(origin, start_et, 'ECLIPJ2000', 'NONE', 'SUN')
+            r2, _ = spice.spkpos(dest, start_et, 'ECLIPJ2000', 'NONE', 'SUN')
+
+            a1 = np.linalg.norm(r1)
+            a2 = np.linalg.norm(r2)
+
+            # compute phase angle
+            dot = np.dot(r1, r2) / (np.linalg.norm(r1) * np.linalg.norm(r2))
+            dot = np.clip(dot, -1, 1)
+            phase_angle = np.degrees(np.arccos(dot))
+
+            cross = np.cross(r1, r2)
+            if cross[2] < 0:
+                phase_angle = 360 - phase_angle
+
+            # compute expected angle
+            phi_nom = hohmann_phase_angle(a1, a2, mu)
+
+            # filter
+            diff = abs((phase_angle - phi_nom + 180) % 360 - 180)
+
+            if diff > 40:
+                print("phase angle outside range")
+                continue
+
+            ##### END PHASE ANGLE FILTERING ########
 
             # Convert back to UTC string for your interface
             start_str = spice.et2utc(start_et, "C", 0)

@@ -4,6 +4,8 @@ import planetary_data as pd
 import numpy as np
 
 def lambert_universal(r0, r, dt, mu=pd.sun['mu'], prograde=True, max_iter=100, tol=1e-6):
+
+    sqrt_mu = math.sqrt(mu)
     r0 = np.array(r0)
     r = np.array(r)
 
@@ -42,8 +44,8 @@ def lambert_universal(r0, r, dt, mu=pd.sun['mu'], prograde=True, max_iter=100, t
         c3 = C3(psi)
 
         y = r0_norm + r_norm + A * (psi * c3 - 1) / math.sqrt(c2)
-
         y = max(y, 1e-8)
+
 
         # Ensure physical solution
         if A > 0 and y < 0:
@@ -52,9 +54,9 @@ def lambert_universal(r0, r, dt, mu=pd.sun['mu'], prograde=True, max_iter=100, t
             continue
 
         chi = math.sqrt(y / c2)
-        dt_new = (chi**3 * c3 + A * math.sqrt(y)) / math.sqrt(mu)
+        dt_new = (chi**3 * c3 + A * math.sqrt(y)) / sqrt_mu
 
-        if abs(dt_new - dt) / dt <1e-8 :
+        if abs(dt_new - dt) / dt <tol :
             break
 
         if dt_new <= dt:

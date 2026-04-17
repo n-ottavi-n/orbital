@@ -8,9 +8,9 @@ spice.furnsh('../spice_solar_system/solar_system_kernel.txt')
 best = optimize_c3(
     lambert_interface,
     origin='EARTH',
-    dest='VENUS',
-    base_start='Mar 28, 2020, 12:00 UTC',
-    base_arrival='Sep 20, 2020, 00:00 UTC',
+    dest='JUPITER BARYCENTER',
+    base_start='Dec 25, 2028, 12:00 UTC',
+    base_arrival='Jul 01, 2031, 00:00 UTC',
     days_range=1,
     step_hours=1
 )

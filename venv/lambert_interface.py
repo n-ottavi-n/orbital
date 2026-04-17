@@ -55,11 +55,6 @@ class lambert_interface:
 
         position_tgt, lightTimes = spice.spkpos(self.dest, self.etArr, 'ECLIPJ2000', 'NONE', self.obs)
 
-        '''
-        self.start_r=props[0][0] #position vector of origin at start date
-        #end_r=props[1][-1]
-        self.end_r=position_tgt # position vector of target at arrival date
-        '''
         self.start_r, _ = spice.spkpos(self.origin, self.start_et, 'ECLIPJ2000', 'NONE', self.obs)
         self.end_r, _ = spice.spkpos(self.dest, self.arrival_et, 'ECLIPJ2000', 'NONE', self.obs)
 
