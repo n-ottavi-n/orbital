@@ -5,16 +5,16 @@ import spiceypy as spice
 spice.kclear()
 spice.furnsh('../spice_solar_system/solar_system_kernel.txt')
 
-start_date='Dec 24, 2028, 21:00 UTC'
-arrival_date='jul 02, 2031, 00:00 UTC'
-end_date='Oct 12, 2031, 00:00 UTC'
+start_date='Oct 26, 2029, 04:00 UTC'
+arrival_date='Apr 04, 2030, 00:00 UTC'
+end_date='Apr 12, 2030, 00:00 UTC'
 
 steps=10000
 
-perturbations=[planetary_data.earth, planetary_data.jupiter, planetary_data.moon]
+perturbations=[planetary_data.earth, planetary_data.venus, planetary_data.jupiter, planetary_data.moon]
 
 origin='EARTH'
-dest='JUPITER BARYCENTER'
+dest='VENUS'
 
 
 int=lambert_interface(origin,dest,start_date,arrival_date,end_date,steps,perturbations)

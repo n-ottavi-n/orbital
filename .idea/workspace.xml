@@ -4,15 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1b77b4e7-88cf-4253-9100-3955295aaa41" name="Changes" comment="new lambert solver, added prokchop plots, some cleanup">
+    <list default="true" id="1b77b4e7-88cf-4253-9100-3955295aaa41" name="Changes" comment="porkchop improvements, lambert universal filtering">
+      <change afterPath="$PROJECT_DIR$/venv/porkchop_interface.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/tests/porkchop_int_test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/venv/lambert_interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/lambert_interface.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/venv/lambert_tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/lambert_tools.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/optimizer.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/optimizer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/venv/tests/lambert_int_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/tests/lambert_int_test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/venv/tests/optimizer_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/tests/optimizer_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/tests/porkchop.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/tests/porkchop.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/trajectory_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/trajectory_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/tests/porkchop.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,6 +33,7 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -80,13 +81,13 @@
       <recent name="C:\Users\notta\PycharmProjects\orbital\venv\spice_lunar" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\notta\PycharmProjects\orbital\venv" />
       <recent name="C:\Users\notta\PycharmProjects\orbital\venv\tests" />
       <recent name="C:\Users\notta\PycharmProjects\orbital\venv\apps" />
-      <recent name="C:\Users\notta\PycharmProjects\orbital\venv" />
       <recent name="C:\Users\notta\PycharmProjects\orbital\venv\data" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.lambert_int_test">
+  <component name="RunManager" selected="Python.porkchop_int_test">
     <configuration name="lambert_int_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="orbital" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -100,27 +101,6 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/tests/lambert_int_test.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="optimizer" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="orbital" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/venv" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/optimizer.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -150,7 +130,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="porkchop (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="performance_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="orbital" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -162,7 +142,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/tests/porkchop.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/tests/performance_test.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -171,7 +151,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="porkchop" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="porkchop_int_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="orbital" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -179,11 +159,32 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/venv" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/venv/tests" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="C:\Users\notta\PycharmProjects\orbital\venv\tests\porkchop.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/tests/porkchop_int_test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="porkchop_interface" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="orbital" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/venv/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="C:\Users\notta\PycharmProjects\orbital\venv\porkchop_interface.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -193,19 +194,19 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.optimizer" />
+      <item itemvalue="Python.porkchop_int_test" />
+      <item itemvalue="Python.porkchop_interface" />
+      <item itemvalue="Python.performance_test" />
       <item itemvalue="Python.optimizer_test" />
-      <item itemvalue="Python.porkchop" />
-      <item itemvalue="Python.porkchop (1)" />
       <item itemvalue="Python.lambert_int_test" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.lambert_int_test" />
+        <item itemvalue="Python.porkchop_int_test" />
+        <item itemvalue="Python.porkchop_interface" />
         <item itemvalue="Python.optimizer_test" />
-        <item itemvalue="Python.porkchop (1)" />
-        <item itemvalue="Python.porkchop" />
-        <item itemvalue="Python.optimizer" />
+        <item itemvalue="Python.lambert_int_test" />
+        <item itemvalue="Python.performance_test" />
       </list>
     </recent_temporary>
   </component>
@@ -346,7 +347,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776350869255</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="porkchop improvements, lambert universal filtering">
+      <option name="closed" value="true" />
+      <created>1776419580192</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1776419580192</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -407,6 +416,7 @@
     <MESSAGE value="added lambert solver" />
     <MESSAGE value="added lambert interface, changed interplanetary interface to class" />
     <MESSAGE value="new lambert solver, added prokchop plots, some cleanup" />
-    <option name="LAST_COMMIT_MESSAGE" value="new lambert solver, added prokchop plots, some cleanup" />
+    <MESSAGE value="porkchop improvements, lambert universal filtering" />
+    <option name="LAST_COMMIT_MESSAGE" value="porkchop improvements, lambert universal filtering" />
   </component>
 </project>

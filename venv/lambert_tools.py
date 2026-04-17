@@ -3,7 +3,7 @@ import math
 import planetary_data as pd
 import numpy as np
 
-def lambert_universal(r0, r, dt, mu=pd.sun['mu'], prograde=True, max_iter=100, tol=1e-6):
+def lambert_universal(r0, r, dt, mu, prograde=True, max_iter=100, tol=1e-6):
 
     sqrt_mu = math.sqrt(mu)
     r0 = np.array(r0)

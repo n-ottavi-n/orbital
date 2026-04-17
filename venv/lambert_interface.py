@@ -1,5 +1,5 @@
 import math
-import planetary_data
+import planetary_data as pd
 from lambert_tools import lambert_uv, lambert_universal
 import spiceypy as spice
 import numpy as np
@@ -13,10 +13,9 @@ steps=10000
 '''
 
 class lambert_interface:
-    def __init__(self,origin, dest, start_date,arrival_date,end_date,steps, perturbations):
+    def __init__(self,origin, dest, start_date,arrival_date,end_date,steps, perturbations, mu=pd.sun['mu']):
 
-        #spice.kclear()
-        #spice.furnsh('../spice_solar_system/solar_system_kernel.txt')
+        self.mu = mu
         self.start_date=start_date
         self.end_date=end_date
         etOne = spice.str2et(start_date)
@@ -59,7 +58,7 @@ class lambert_interface:
         self.end_r, _ = spice.spkpos(self.dest, self.arrival_et, 'ECLIPJ2000', 'NONE', self.obs)
 
         #self.v=lambert_uv(self.start_r,self.end_r,self.tof, 0.8, 4*math.pi**2,-4*math.pi**2)
-        self.v=lambert_universal(self.start_r,self.end_r,self.tof)
+        self.v=lambert_universal(self.start_r,self.end_r,self.tof, self.mu)
         self.v0 = self.v[:3]
 
     def plot(self,show=False, animate=False):
