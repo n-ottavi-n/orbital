@@ -31,7 +31,7 @@ class interplanetary_interface:
         self.cb=central_body,
         self.sc_data=sc_data,
         self.steps=steps
-        spice.furnsh('../spice_solar_system/solar_system_kernel.txt')
+        #spice.furnsh('../spice_solar_system/solar_system_kernel.txt')
 
     def plot_trajectory(self, steps=1000, animate=False, show=False, save=False, save_file='matplot003.gif'):
         '''
@@ -82,14 +82,15 @@ class interplanetary_interface:
         if cb['name']=='sun':
             au=True
 
-        #set plot title
-        plot_title=''
+        if show:
+            #set plot title
+            plot_title=''
 
-        #call the required plot
-        if animate:
-            t.plot_n_orbits_animate(self.props, step_t=dt, labels=labels, cb=cb, show_plot=show, save=save, au_units=au, save_file=save_file)
-        else:
-            t.plot_n_orbits(self.props, step_t=dt, labels=labels, cb=cb, show_plot=show, save_plot=save, au_units=au, save_file=save_file)
+            #call the required plot
+            if animate:
+                t.plot_n_orbits_animate(self.props, step_t=dt, labels=labels, cb=cb, show_plot=show, save=save, au_units=au, save_file=save_file)
+            else:
+                t.plot_n_orbits(self.props, step_t=dt, labels=labels, cb=cb, show_plot=show, save_plot=save, au_units=au, save_file=save_file)
 
 
 

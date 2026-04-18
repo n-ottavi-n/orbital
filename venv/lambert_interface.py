@@ -43,6 +43,7 @@ class lambert_interface:
         self.dest=dest
         self.bodies=[origin,dest]
 
+
     def solve(self):
         props = []
         #get states of other bodies to plot e.g. perturbating bodies
@@ -60,6 +61,17 @@ class lambert_interface:
         #self.v=lambert_uv(self.start_r,self.end_r,self.tof, 0.8, 4*math.pi**2,-4*math.pi**2)
         self.v=lambert_universal(self.start_r,self.end_r,self.tof, self.mu)
         self.v0 = self.v[:3]
+
+    def propagate(self,show=False, animate=False):
+
+        #self.v0=self.v[:3] #departure velocity vector
+        x0=self.start_r#departure position vector
+        xv=np.append(x0,self.v0)
+        xv=xv.tolist()
+        states=[['spacecraft'],[xv]]
+        int=interplanetary_interface(states,self.bodies,self.start_date,self.end_date,self.perturbations,steps=self.steps)
+        int.plot_trajectory(show=False, animate=animate)
+        self.int_props=int.props
 
     def plot(self,show=False, animate=False):
 

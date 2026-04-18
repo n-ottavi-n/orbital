@@ -4,15 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1b77b4e7-88cf-4253-9100-3955295aaa41" name="Changes" comment="porkchop improvements, lambert universal filtering">
-      <change afterPath="$PROJECT_DIR$/venv/porkchop_interface.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/venv/tests/porkchop_int_test.py" afterDir="false" />
+    <list default="true" id="1b77b4e7-88cf-4253-9100-3955295aaa41" name="Changes" comment="porkchop converted to interface">
+      <change afterPath="$PROJECT_DIR$/venv/optimize_periapsis.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/spice_solar_system/pck00011.tpc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/venv/tests/optimize_periapsis_test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/interplanetary_interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/interplanetary_interface.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/venv/lambert_interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/lambert_interface.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/lambert_tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/lambert_tools.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/tests/lambert_int_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/tests/lambert_int_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/tests/optimizer_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/tests/optimizer_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/tests/porkchop.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/porkchop_interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/porkchop_interface.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/spice_solar_system/solar_system_kernel.txt" beforeDir="false" afterPath="$PROJECT_DIR$/venv/spice_solar_system/solar_system_kernel.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/tests/interplanetary_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/tests/interplanetary_test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,13 +82,35 @@
       <recent name="C:\Users\notta\PycharmProjects\orbital\venv\spice_lunar" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\notta\PycharmProjects\orbital\venv\spice_solar_system" />
       <recent name="C:\Users\notta\PycharmProjects\orbital\venv" />
       <recent name="C:\Users\notta\PycharmProjects\orbital\venv\tests" />
       <recent name="C:\Users\notta\PycharmProjects\orbital\venv\apps" />
       <recent name="C:\Users\notta\PycharmProjects\orbital\venv\data" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.porkchop_int_test">
+  <component name="RunManager" selected="Python.optimize_periapsis_test">
+    <configuration name="interplanetary_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="orbital" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/venv/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/tests/interplanetary_test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="lambert_int_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="orbital" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -109,7 +132,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="optimizer_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="optimize_periapsis" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="orbital" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -117,11 +140,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/venv/tests" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/venv" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/tests/optimizer_test.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/optimize_periapsis.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -130,7 +153,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="performance_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="optimize_periapsis_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="orbital" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -142,7 +165,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/tests/performance_test.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/tests/optimize_periapsis_test.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -172,41 +195,20 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="porkchop_interface" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="orbital" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/venv/tests" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="C:\Users\notta\PycharmProjects\orbital\venv\porkchop_interface.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <list>
+      <item itemvalue="Python.interplanetary_test" />
+      <item itemvalue="Python.optimize_periapsis" />
+      <item itemvalue="Python.optimize_periapsis_test" />
       <item itemvalue="Python.porkchop_int_test" />
-      <item itemvalue="Python.porkchop_interface" />
-      <item itemvalue="Python.performance_test" />
-      <item itemvalue="Python.optimizer_test" />
       <item itemvalue="Python.lambert_int_test" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.porkchop_int_test" />
-        <item itemvalue="Python.porkchop_interface" />
-        <item itemvalue="Python.optimizer_test" />
+        <item itemvalue="Python.optimize_periapsis_test" />
+        <item itemvalue="Python.interplanetary_test" />
         <item itemvalue="Python.lambert_int_test" />
-        <item itemvalue="Python.performance_test" />
+        <item itemvalue="Python.optimize_periapsis" />
+        <item itemvalue="Python.porkchop_int_test" />
       </list>
     </recent_temporary>
   </component>
@@ -355,7 +357,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776419580192</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="porkchop converted to interface">
+      <option name="closed" value="true" />
+      <created>1776453300444</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1776453300444</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -417,6 +427,7 @@
     <MESSAGE value="added lambert interface, changed interplanetary interface to class" />
     <MESSAGE value="new lambert solver, added prokchop plots, some cleanup" />
     <MESSAGE value="porkchop improvements, lambert universal filtering" />
-    <option name="LAST_COMMIT_MESSAGE" value="porkchop improvements, lambert universal filtering" />
+    <MESSAGE value="porkchop converted to interface" />
+    <option name="LAST_COMMIT_MESSAGE" value="porkchop converted to interface" />
   </component>
 </project>

@@ -232,7 +232,7 @@ class porkchop_interface:
         plt.clabel(cs_tof, inline=True, fontsize=8, fmt="%d d", colors='red')
 
         # define clean ticks for pretty graph
-        tick_idx = np.linspace(0, len(launches)-1, 6, dtype=int)
+        tick_idx = np.linspace(0, len(launches)-1, 10, dtype=int)
 
         launch_ticks = launches[tick_idx] / 86400
         launch_labels = [
@@ -240,7 +240,7 @@ class porkchop_interface:
             for i in tick_idx
         ]
 
-        tick_idx_y = np.linspace(0, len(arrivals)-1, 6, dtype=int)
+        tick_idx_y = np.linspace(0, len(arrivals)-1, 10, dtype=int)
 
         arrival_ticks = arrivals[tick_idx_y] / 86400
         arrival_labels = [
