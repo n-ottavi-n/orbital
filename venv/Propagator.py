@@ -91,6 +91,7 @@ class Propagator:
         self.rs=self.ys[:,:3]
         self.vs = self.ys[:,3:]
 
+
     def diffy_q(self, t, y):
         rx,ry,rz,vx,vy,vz=y
         r=np.array([rx,ry,rz])

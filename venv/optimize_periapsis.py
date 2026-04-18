@@ -202,6 +202,7 @@ def optimize_periapsis(
 
     rp_final = estimate_periapsis(ranges)
 
+
     return {
         "success": result.success,
         "message": result.message,
@@ -211,5 +212,6 @@ def optimize_periapsis(
         "v0_corrected": final.v0,
         "periapsis_km": rp_final,
         "target_km": rp_target,
-        "error_km": rp_final - rp_target
+        "error_km": rp_final - rp_target,
+        "sim_object": final
     }

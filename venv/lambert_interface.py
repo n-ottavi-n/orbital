@@ -71,7 +71,12 @@ class lambert_interface:
         states=[['spacecraft'],[xv]]
         int=interplanetary_interface(states,self.bodies,self.start_date,self.end_date,self.perturbations,steps=self.steps)
         int.plot_trajectory(show=False, animate=animate)
+        #print("props: ", int.props)
         self.int_props=int.props
+        #print("vels: ", int.vels)
+        self.int_vels = int.vels
+        #print("states: ", int.states)
+        self.int_states = int.states
 
     def plot(self,show=False, animate=False):
 
@@ -83,6 +88,7 @@ class lambert_interface:
         int=interplanetary_interface(states,self.bodies,self.start_date,self.end_date,self.perturbations,steps=self.steps)
         int.plot_trajectory(show=show, animate=animate)
         self.int_props=int.props
+
 
     def deltaV(self):
 

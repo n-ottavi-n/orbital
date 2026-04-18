@@ -31,7 +31,6 @@ class interplanetary_interface:
         self.cb=central_body,
         self.sc_data=sc_data,
         self.steps=steps
-        #spice.furnsh('../spice_solar_system/solar_system_kernel.txt')
 
     def plot_trajectory(self, steps=1000, animate=False, show=False, save=False, save_file='matplot003.gif'):
         '''
@@ -45,8 +44,11 @@ class interplanetary_interface:
         # get names and state vectors from list of spacecraft
         labels = self.data[0][0]
         states = self.data[0][1]
+
         #initialize propagators array
         props=[]
+        vels=[]
+
 
         etOne = spice.str2et(self.start_date)
         etTwo = spice.str2et(self.end_date)
@@ -57,11 +59,17 @@ class interplanetary_interface:
 
         cb=self.cb[0] # I have to but whyyyyyyy ????
         #loop through propagators
+
         for state in states:
             prop = Propagator(state, self.steps, start_date=self.start_date, end_date=self.end_date, coes=False, deg=True,cb=cb, perts=self.perturbations, spacecraft_data=self.sc_data)
             times = prop.times
             prop.propagate()
             props.append(prop.rs)
+            vels.append(prop.vs)
+            #states.append(prop.ys)
+
+        self.vels = np.array(vels)
+        self.states = np.array(states)
 
         obs = 'SOLAR SYSTEM BARYCENTER'
 

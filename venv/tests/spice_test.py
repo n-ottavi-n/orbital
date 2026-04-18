@@ -8,7 +8,10 @@ import planetary_data
 
 spice.furnsh('../spice_solar_system/solar_system_kernel.txt')
 
-step = 400
+for i in range(spice.ktotal("SPK")):
+    print(spice.kdata(i, "SPK"))
+
+'''step = 400
 # we are going to get positions between these two dates
 utc = ['Sep 6, 1977', 'Sep 10, 1989']
 
@@ -39,4 +42,4 @@ labels=['earth','venus','jupiter','saturn','uranus','neptune','vger1','vger2']
 # Clean up the kernels
 spice.kclear()
 
-t.plot_n_orbits_animate(positions, dt, labels, cb=planetary_data.sun, show_plot=True,save=False,  au_units=True, interval=0.01)
+t.plot_n_orbits_animate(positions, dt, labels, cb=planetary_data.sun, show_plot=True,save=False,  au_units=True, interval=0.01)'''
