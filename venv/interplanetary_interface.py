@@ -71,7 +71,7 @@ class interplanetary_interface:
         self.vels = np.array(vels)
         self.states = np.array(states)
 
-        obs = 'SOLAR SYSTEM BARYCENTER'
+        obs = 'SUN'
 
         states_bodies=[]
         #get states of other bodies to plot e.g. perturbating bodies

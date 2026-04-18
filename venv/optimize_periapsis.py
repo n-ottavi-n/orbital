@@ -12,6 +12,7 @@ def optimize_periapsis(
     steps,
     perturbations,
     periapsis_altitude_km,
+    mu_body,
     max_iter=80
 ):
     """
@@ -72,28 +73,40 @@ def optimize_periapsis(
     # --------------------------------------------------
     # Helper: smooth periapsis estimate
     # --------------------------------------------------
-    def estimate_periapsis(ranges):
-
+    def estimate_periapsis(pos_sc, pos_tgt, vel_sc, times, mu_body):
+        """
+        Compute osculating periapsis radius at closest approach,
+        using proper orbital mechanics.
+        """
+        # get Mars velocity from SPICE at each step to find true relative state
+        rel = pos_sc - pos_tgt
+        ranges = np.linalg.norm(rel, axis=1)
         i = np.argmin(ranges)
+        epoch = times[i]
 
-        if i == 0 or i == len(ranges) - 1:
-            return ranges[i]
+        # SPICE state for true relative velocity
+        state_body, _ = spice.spkezr(dest, epoch, "ECLIPJ2000", "NONE", "SUN")
+        r_body_spice = state_body[:3]
+        v_body_spice = state_body[3:]
 
-        y1 = ranges[i - 1]
-        y2 = ranges[i]
-        y3 = ranges[i + 1]
+        r = pos_sc[i] - r_body_spice
+        v = vel_sc[i] - v_body_spice
 
-        # quadratic interpolation
-        denom = (y1 - 2 * y2 + y3)
+        rmag = np.linalg.norm(r)
+        vmag = np.linalg.norm(v)
+        energy = vmag ** 2 / 2 - mu_body / rmag
+        h = np.cross(r, v)
+        hmag = np.linalg.norm(h)
+        e_vec = np.cross(v, h) / mu_body - r / rmag
+        e = np.linalg.norm(e_vec)
 
-        if abs(denom) < 1e-12:
-            return y2
-
-        offset = 0.5 * (y1 - y3) / denom
-
-        y_min = y2 - 0.25 * (y1 - y3) * offset
-
-        return y_min
+        if abs(e - 1.0) < 1e-10:
+            return hmag ** 2 / mu_body / 2
+        elif abs(e - 1.0) < 1e-6:
+            return hmag ** 2 / mu_body / (1 + e)
+        else:
+            a = -mu_body / (2 * energy)
+            return a * (1 - e)
 
     # --------------------------------------------------
     # Objective
@@ -124,12 +137,15 @@ def optimize_periapsis(
             trial.propagate()
 
             pos_sc = trial.int_props[0]
-            pos_tgt = trial.int_props[-1]
+            pos_tgt = np.array([
+                spice.spkpos(dest, t, "ECLIPJ2000", "NONE", "SUN")[0]
+                for t in trial.times
+            ])
 
             rel = pos_sc - pos_tgt
-            ranges = np.linalg.norm(rel, axis=1)
+            vel_sc = trial.int_vels[0]
 
-            rp = estimate_periapsis(ranges)
+            rp = estimate_periapsis(pos_sc, pos_tgt, vel_sc, trial.times, mu_body)
 
             err = rp - rp_target
 
@@ -193,14 +209,19 @@ def optimize_periapsis(
     final.propagate()
 
     pos_sc = final.int_props[0]
-    pos_tgt = final.int_props[-1]
+    pos_tgt = np.array([
+        spice.spkpos(dest, t, "ECLIPJ2000", "NONE", "SUN")[0]
+        for t in final.times
+    ])
 
 
     rel = pos_sc - pos_tgt
 
     ranges = np.linalg.norm(rel, axis=1)
 
-    rp_final = estimate_periapsis(ranges)
+    vel_sc = final.int_vels[0]
+
+    rp_final = estimate_periapsis(pos_sc, pos_tgt, vel_sc, final.times, mu_body)
 
 
     return {
