@@ -13,21 +13,24 @@ steps=10000
 '''
 
 class lambert_interface:
-    def __init__(self,origin, dest, start_date,arrival_date,end_date,steps, perturbations, mu=pd.sun['mu']):
+    def __init__(self,origin, dest, start_date,arrival_date,end_date,steps, perturbations, mu=pd.sun['mu'], arrival_et_offset=0.0):
 
         self.mu = mu
         self.start_date=start_date
         self.end_date=end_date
+
         etOne = spice.str2et(start_date)
         etTwo = spice.str2et(end_date)
-        self.etArr = spice.str2et(arrival_date)
+
+        # arrival_et_offset is in seconds — optimizer shifts this
+        self.etArr = spice.str2et(arrival_date) + arrival_et_offset
         self.tof=self.etArr-etOne
         self.dt = (etTwo - etOne) / steps
         self.steps=steps
 
-        self.start_et = spice.str2et(start_date)
-        self.arrival_et = spice.str2et(arrival_date)
-        self.end_et = spice.str2et(end_date)
+        self.start_et = etOne
+        self.arrival_et = self.etArr  # consistent with offset
+        self.end_et = etTwo
 
 
 

@@ -2,6 +2,7 @@ import math
 
 import planetary_data as pd
 import numpy as np
+import spiceypy as spice
 
 def lambert_universal(r0, r, dt, mu=pd.sun['mu'], prograde=True, max_iter=100, tol=1e-6):
     r0 = np.array(r0)
@@ -128,3 +129,32 @@ def hohmann_phase_angle(a1, a2, mu):
     n2 = np.sqrt(mu / a2**3)
     phi = np.pi - n2 * t_H
     return np.degrees(phi)
+
+def compute_arrival_inclination(v_inf_arr_vec, target_body, epoch, mu_body=None):
+    """
+    Compute arrival inclination relative to target body equatorial plane
+    from the hyperbolic excess velocity vector.
+    The asymptote direction of the hyperbola determines the orbital plane,
+    which sets the inclination independently of periapsis altitude.
+    """
+    # unit vector of incoming asymptote (reversed v_inf points INTO the SOI)
+    v_inf_hat = -v_inf_arr_vec / np.linalg.norm(v_inf_arr_vec)
+
+    # get body pole direction in ECLIPJ2000
+    # the z-axis of IAU_BODY frame is the north pole
+    tipm = spice.pxform(f"IAU_{target_body.upper()}", "ECLIPJ2000", epoch)
+    pole = tipm @ np.array([0.0, 0.0, 1.0])
+    pole_hat = pole / np.linalg.norm(pole)
+
+    # inclination = angle between orbital plane normal and pole
+    # orbital plane normal is perpendicular to v_inf (and to some periapsis vector)
+    # but the asymptote alone constrains inclination to within a range
+    # the angle between v_inf and the equatorial plane gives the declination of the asymptote
+    # inc = 90° - |dec| for equatorial approach, but more precisely:
+    dec = math.degrees(math.asin(np.clip(np.dot(v_inf_hat, pole_hat), -1, 1)))
+
+    # inclination is bounded by: |dec| <= inc <= 180° - |dec|
+    # minimum inclination achievable = |declination of asymptote|
+    inc_min = abs(dec)
+
+    return inc_min

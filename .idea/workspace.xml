@@ -4,13 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1b77b4e7-88cf-4253-9100-3955295aaa41" name="Changes" comment="get orbital elements at periapsis">
-      <change afterPath="$PROJECT_DIR$/venv/plot_approach.py" afterDir="false" />
+    <list default="true" id="1b77b4e7-88cf-4253-9100-3955295aaa41" name="Changes" comment="changed optimizer to target periapsis, fixed optimizer to target mars position bbased on SPICE data, added approach plotting">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/venv/arrival_orbit_elements.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/arrival_orbit_elements.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/venv/interplanetary_interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/interplanetary_interface.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/lambert_interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/lambert_interface.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/venv/optimize_periapsis.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/optimize_periapsis.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/plot_approach.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/plot_approach.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/porkchop_interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/porkchop_interface.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/venv/tests/optimize_periapsis_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/tests/optimize_periapsis_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/tests/porkchop_int_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/tests/porkchop_int_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/venv/trajectory_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/venv/trajectory_utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,7 +89,7 @@
       <recent name="C:\Users\notta\PycharmProjects\orbital\venv\data" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.optimize_periapsis_test">
+  <component name="RunManager" selected="Python.porkchop_int_test">
     <configuration name="arrival_orbit_elements" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="orbital" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -171,7 +174,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="spice_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="porkchop_int_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="orbital" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -183,7 +186,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/tests/spice_test.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/tests/porkchop_int_test.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -193,19 +196,19 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Python.porkchop_int_test" />
       <item itemvalue="Python.arrival_orbit_elements" />
       <item itemvalue="Python.optimize_periapsis_test" />
-      <item itemvalue="Python.spice_test" />
       <item itemvalue="Python.optimizer_test" />
       <item itemvalue="Python.lambert_int_test" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.porkchop_int_test" />
         <item itemvalue="Python.optimize_periapsis_test" />
         <item itemvalue="Python.arrival_orbit_elements" />
         <item itemvalue="Python.optimizer_test" />
         <item itemvalue="Python.lambert_int_test" />
-        <item itemvalue="Python.spice_test" />
       </list>
     </recent_temporary>
   </component>
@@ -378,7 +381,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776533747741</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="changed optimizer to target periapsis, fixed optimizer to target mars position bbased on SPICE data, added approach plotting">
+      <option name="closed" value="true" />
+      <created>1776541067706</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1776541067706</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="UnknownFeatures">
@@ -443,6 +454,7 @@
     <MESSAGE value="porkchop converted to interface" />
     <MESSAGE value="added periapsis optimizer" />
     <MESSAGE value="get orbital elements at periapsis" />
-    <option name="LAST_COMMIT_MESSAGE" value="get orbital elements at periapsis" />
+    <MESSAGE value="changed optimizer to target periapsis, fixed optimizer to target mars position bbased on SPICE data, added approach plotting" />
+    <option name="LAST_COMMIT_MESSAGE" value="changed optimizer to target periapsis, fixed optimizer to target mars position bbased on SPICE data, added approach plotting" />
   </component>
 </project>

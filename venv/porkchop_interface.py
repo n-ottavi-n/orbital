@@ -6,6 +6,7 @@ from lambert_interface import lambert_interface
 from datetime import datetime
 from trajectory_utils import hohmann_phase_angle
 import time
+from trajectory_utils import compute_arrival_inclination
 
 
 def et_to_datetime(et):
@@ -63,6 +64,9 @@ class porkchop_interface:
 
         VINF_ARR = np.zeros_like(C3)
         VINF_ARR[:] = np.nan
+
+        INC_MIN = np.zeros_like(C3)
+        INC_MIN[:] = np.nan
 
         #for testing filter
         tested=0
@@ -147,22 +151,30 @@ class porkchop_interface:
 
                     best_c3 = np.inf
                     best_vinf_arr = np.inf
+                    best_vinf_arr_vec = None
 
                     for sol in sols:
                         v0 = sol[:3]
                         v1 = sol[3:]
-                        v_inf_dep = v0 - v_planet #departure c3
-
-                        # arrival v_inf
+                        v_inf_dep = v0 - v_planet
                         v_inf_arr_vec = v1 - v_planet_arr
                         v_inf_arr = np.linalg.norm(v_inf_arr_vec)
 
                         c3 = np.dot(v_inf_dep, v_inf_dep)
                         best_c3 = min(best_c3, c3)
-                        best_vinf_arr = min(best_vinf_arr, v_inf_arr)
 
+                        if v_inf_arr < best_vinf_arr:
+                            best_vinf_arr = v_inf_arr
+                            best_vinf_arr_vec = v_inf_arr_vec  # track the vector, not just the magnitude
+
+                    # after the loop:
                     C3[i, j] = best_c3
                     VINF_ARR[i, j] = best_vinf_arr
+
+                    if best_vinf_arr_vec is not None:
+                        INC_MIN[i, j] = compute_arrival_inclination(
+                            best_vinf_arr_vec, self.target_body, t1
+                        )
 
 
                 except Exception as e:
@@ -230,6 +242,20 @@ class porkchop_interface:
                              colors='red')
 
         plt.clabel(cs_tof, inline=True, fontsize=8, fmt="%d d", colors='red')
+
+        # plot minimum inclination contours
+        inc_levels = np.arange(0, 90, 5)  # every 5°
+
+        cs_inc = plt.contour(
+            launches / 86400,
+            arrivals / 86400,
+            INC_MIN.T,
+            levels=inc_levels,
+            linestyles='solid',
+            linewidths=0.8,
+            colors='white'
+        )
+        plt.clabel(cs_inc, inline=True, fontsize=7, fmt="%d°")
 
         # define clean ticks for pretty graph
         tick_idx = np.linspace(0, len(launches)-1, 10, dtype=int)
