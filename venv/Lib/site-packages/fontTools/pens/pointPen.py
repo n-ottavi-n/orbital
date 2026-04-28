@@ -12,11 +12,15 @@ This allows the caller to provide more data for each point.
 For instance, whether or not a point is smooth, and its name.
 """
 
-import math
-from typing import Any, Optional, Tuple, Dict
+from __future__ import annotations
 
-from fontTools.pens.basePen import AbstractPen, PenError
-from fontTools.misc.transform import DecomposedTransform
+import math
+from typing import Any, Dict, List, Optional, Tuple
+
+from fontTools.misc.enumTools import StrEnum
+from fontTools.misc.loggingTools import LogMixin
+from fontTools.misc.transform import DecomposedTransform, Identity
+from fontTools.pens.basePen import AbstractPen, MissingComponentError, PenError
 
 __all__ = [
     "AbstractPointPen",
@@ -25,7 +29,29 @@ __all__ = [
     "SegmentToPointPen",
     "GuessSmoothPointPen",
     "ReverseContourPointPen",
+    "ReverseFlipped",
 ]
+
+# Some type aliases to make it easier below
+Point = Tuple[float, float]
+PointName = Optional[str]
+# [(pt, smooth, name, kwargs)]
+SegmentPointList = List[Tuple[Optional[Point], bool, PointName, Any]]
+SegmentType = Optional[str]
+SegmentList = List[Tuple[SegmentType, SegmentPointList]]
+
+
+class ReverseFlipped(StrEnum):
+    """How to handle flipped components during decomposition.
+
+    NO: Don't reverse flipped components
+    KEEP_START: Reverse flipped components, keeping original starting point
+    ON_CURVE_FIRST: Reverse flipped components, ensuring first point is on-curve
+    """
+
+    NO = "no"
+    KEEP_START = "keep_start"
+    ON_CURVE_FIRST = "on_curve_first"
 
 
 class AbstractPointPen:
@@ -87,7 +113,7 @@ class BasePointToSegmentPen(AbstractPointPen):
     care of all the edge cases.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.currentPath = None
 
     def beginPath(self, identifier=None, **kwargs):
@@ -95,7 +121,7 @@ class BasePointToSegmentPen(AbstractPointPen):
             raise PenError("Path already begun.")
         self.currentPath = []
 
-    def _flushContour(self, segments):
+    def _flushContour(self, segments: SegmentList) -> None:
         """Override this method.
 
         It will be called for each non-empty sub path with a list
@@ -123,7 +149,7 @@ class BasePointToSegmentPen(AbstractPointPen):
         """
         raise NotImplementedError
 
-    def endPath(self):
+    def endPath(self) -> None:
         if self.currentPath is None:
             raise PenError("Path not begun.")
         points = self.currentPath
@@ -133,7 +159,7 @@ class BasePointToSegmentPen(AbstractPointPen):
         if len(points) == 1:
             # Not much more we can do than output a single move segment.
             pt, segmentType, smooth, name, kwargs = points[0]
-            segments = [("move", [(pt, smooth, name, kwargs)])]
+            segments: SegmentList = [("move", [(pt, smooth, name, kwargs)])]
             self._flushContour(segments)
             return
         segments = []
@@ -161,7 +187,7 @@ class BasePointToSegmentPen(AbstractPointPen):
             else:
                 points = points[firstOnCurve + 1 :] + points[: firstOnCurve + 1]
 
-        currentSegment = []
+        currentSegment: SegmentPointList = []
         for pt, segmentType, smooth, name, kwargs in points:
             currentSegment.append((pt, smooth, name, kwargs))
             if segmentType is None:
@@ -188,7 +214,7 @@ class PointToSegmentPen(BasePointToSegmentPen):
     and kwargs.
     """
 
-    def __init__(self, segmentPen, outputImpliedClosingLine=False):
+    def __init__(self, segmentPen, outputImpliedClosingLine: bool = False) -> None:
         BasePointToSegmentPen.__init__(self)
         self.pen = segmentPen
         self.outputImpliedClosingLine = outputImpliedClosingLine
@@ -270,14 +296,14 @@ class SegmentToPointPen(AbstractPen):
     PointPen protocol.
     """
 
-    def __init__(self, pointPen, guessSmooth=True):
+    def __init__(self, pointPen, guessSmooth=True) -> None:
         if guessSmooth:
             self.pen = GuessSmoothPointPen(pointPen)
         else:
             self.pen = pointPen
-        self.contour = None
+        self.contour: Optional[List[Tuple[Point, SegmentType]]] = None
 
-    def _flushContour(self):
+    def _flushContour(self) -> None:
         pen = self.pen
         pen.beginPath()
         for pt, segmentType in self.contour:
@@ -318,7 +344,17 @@ class SegmentToPointPen(AbstractPen):
     def closePath(self):
         if self.contour is None:
             raise PenError("Contour missing required initial moveTo")
-        if len(self.contour) > 1 and self.contour[0][0] == self.contour[-1][0]:
+
+        # Remove the last point if it's a duplicate of the first, but only if both
+        # are on-curve points (segmentType is not None); for quad blobs
+        # (all off-curve) every point must be preserved:
+        # https://github.com/fonttools/fonttools/issues/4014
+        if (
+            len(self.contour) > 1
+            and (self.contour[0][0] == self.contour[-1][0])
+            and self.contour[0][1] is not None
+            and self.contour[-1][1] is not None
+        ):
             self.contour[0] = self.contour[-1]
             del self.contour[-1]
         else:
@@ -523,3 +559,95 @@ class ReverseContourPointPen(AbstractPointPen):
         if self.currentContour is not None:
             raise PenError("Components must be added before or after contours")
         self.pen.addComponent(glyphName, transform, identifier=identifier, **kwargs)
+
+
+class DecomposingPointPen(LogMixin, AbstractPointPen):
+    """Implements a 'addComponent' method that decomposes components
+    (i.e. draws them onto self as simple contours).
+    It can also be used as a mixin class (e.g. see DecomposingRecordingPointPen).
+
+    You must override beginPath, addPoint, endPath. You may
+    additionally override addVarComponent and addComponent.
+
+    By default a warning message is logged when a base glyph is missing;
+    set the class variable ``skipMissingComponents`` to False if you want
+    all instances of a sub-class to raise a :class:`MissingComponentError`
+    exception by default.
+    """
+
+    skipMissingComponents = True
+    # alias error for convenience
+    MissingComponentError = MissingComponentError
+
+    def __init__(
+        self,
+        glyphSet,
+        *args,
+        skipMissingComponents=None,
+        reverseFlipped: bool | ReverseFlipped = False,
+        **kwargs,
+    ):
+        """Takes a 'glyphSet' argument (dict), in which the glyphs that are referenced
+        as components are looked up by their name.
+
+        If the optional 'reverseFlipped' argument is True or a ReverseFlipped enum value,
+        components whose transformation matrix has a negative determinant will be decomposed
+        with a reversed path direction to compensate for the flip.
+
+        The reverseFlipped parameter can be:
+        - False or ReverseFlipped.NO: Don't reverse flipped components
+        - True or ReverseFlipped.KEEP_START: Reverse, keeping original starting point
+        - ReverseFlipped.ON_CURVE_FIRST: Reverse, ensuring first point is on-curve
+
+        The optional 'skipMissingComponents' argument can be set to True/False to
+        override the homonymous class attribute for a given pen instance.
+        """
+        super().__init__(*args, **kwargs)
+        self.glyphSet = glyphSet
+        self.skipMissingComponents = (
+            self.__class__.skipMissingComponents
+            if skipMissingComponents is None
+            else skipMissingComponents
+        )
+        # Handle backward compatibility and validate string inputs
+        if reverseFlipped is False:
+            self.reverseFlipped = ReverseFlipped.NO
+        elif reverseFlipped is True:
+            self.reverseFlipped = ReverseFlipped.KEEP_START
+        else:
+            self.reverseFlipped = ReverseFlipped(reverseFlipped)
+
+    def addComponent(self, baseGlyphName, transformation, identifier=None, **kwargs):
+        """Transform the points of the base glyph and draw it onto self.
+
+        The `identifier` parameter and any extra kwargs are ignored.
+        """
+        from fontTools.pens.transformPen import TransformPointPen
+
+        try:
+            glyph = self.glyphSet[baseGlyphName]
+        except KeyError:
+            if not self.skipMissingComponents:
+                raise MissingComponentError(baseGlyphName)
+            self.log.warning(
+                "glyph '%s' is missing from glyphSet; skipped" % baseGlyphName
+            )
+        else:
+            pen = self
+            if transformation != Identity:
+                pen = TransformPointPen(pen, transformation)
+            if self.reverseFlipped != ReverseFlipped.NO:
+                # if the transformation has a negative determinant, it will
+                # reverse the contour direction of the component
+                a, b, c, d = transformation[:4]
+                if a * d - b * c < 0:
+                    pen = ReverseContourPointPen(pen)
+
+                    if self.reverseFlipped == ReverseFlipped.ON_CURVE_FIRST:
+                        from fontTools.pens.filterPen import OnCurveFirstPointPen
+
+                        # Ensure the starting point is an on-curve.
+                        # Wrap last so this filter runs first during drawPoints
+                        pen = OnCurveFirstPointPen(pen)
+
+            glyph.drawPoints(pen)

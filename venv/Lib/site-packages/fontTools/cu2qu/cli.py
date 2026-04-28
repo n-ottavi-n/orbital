@@ -64,7 +64,7 @@ def _copytree(input_path, output_path):
     shutil.copytree(input_path, output_path)
 
 
-def main(args=None):
+def _main(args=None):
     """Convert a UFO font from cubic to quadratic curves"""
     parser = argparse.ArgumentParser(prog="cu2qu")
     parser.add_argument("--version", action="version", version=fontTools.__version__)
@@ -81,7 +81,7 @@ def main(args=None):
         type=float,
         metavar="ERROR",
         default=None,
-        help="maxiumum approximation error measured in EM (default: 0.001)",
+        help="maximum approximation error measured in EM (default: 0.001)",
     )
     parser.add_argument(
         "-m",
@@ -112,7 +112,7 @@ def main(args=None):
         default=1,
         const=_cpu_count(),
         metavar="N",
-        help="Convert using N multiple processes (default: %(default)s)",
+        help="convert using N multiple processes (default: %(default)s)",
     )
 
     output_parser = parser.add_mutually_exclusive_group()
