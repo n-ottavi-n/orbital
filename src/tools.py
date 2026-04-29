@@ -151,40 +151,27 @@ def plot_n_orbits(rs, step_t, labels, cb, show_plot=False, save_plot=False, au_u
 
 
 def coes2rv(coes, deg=False, mu=planetary_data.earth['mu']):
-    '''
-    :param coes: a,e,i,m,aop,raan
-    :param deg: true if degrees
-    :param mu: of central body
-    :return: [x,y,z],[vx,vy,vz]
-    '''
-    a,e,i,m,aop,raan=coes
-    E=ecc_anom(m,e) #eccentric anomaly
+    a, e, i, m, aop, raan = coes
+    E = ecc_anom(m, e)  # eccentric anomaly
     if deg:
-        i = math.radians(i)
-        m = math.radians(m)
-        aop = math.radians(aop)
-        raan = math.radians(raan)
-
-
-    beta=e/(1+math.sqrt(1-e**2))
-    nu=E+2*math.atan((beta*math.sin(E))/(1-beta*math.cos(E))) #true anomaly
-    radius=a*(1-e*math.cos(E)) #radius
-    h=math.sqrt(mu*a*(1-e**2)) #specific angular momentum
-    p=radius*(1+e*math.cos(nu)) #semi-latus rectum :)
-
-    x = radius * (math.cos(raan) * math.cos(aop + nu) - math.sin(raan) * math.sin(aop + nu) * math.cos(i))
-    y = radius * (math.sin(raan) * math.cos(aop + nu) + math.cos(raan) * math.sin(aop + nu) * math.cos(i))
-    z = radius * (math.sin(i) * math.sin(aop + nu))
-
-    r = [x,y,z]
-
-    x_dot = (((x*h*e)/(radius*p))*math.sin(nu))-(h/radius)*(math.cos(raan) * math.sin(aop + nu) + math.sin(raan) * math.cos(aop + nu) * math.cos(i))
-    y_dot = (((y * h * e) / (radius * p)) * math.sin(nu)) - (h / radius) * (math.sin(raan) * math.sin(aop + nu) - math.cos(raan) * math.cos(aop + nu) * math.cos(i))
-    z_dot = (((z * h * e) / (radius * p)) * math.sin(nu))+(h/radius)*(math.sin(i) * math.cos(aop + nu))
-
-    v = [x_dot,y_dot,z_dot]
-
-    return r,v
+        i    = np.radians(i)
+        m    = np.radians(m)
+        aop  = np.radians(aop)
+        raan = np.radians(raan)
+    beta   = e / (1 + np.sqrt(1 - e**2))
+    nu     = E + 2 * np.arctan((beta * np.sin(E)) / (1 - beta * np.cos(E)))  # true anomaly
+    radius = a * (1 - e * np.cos(E))
+    h      = np.sqrt(mu * a * (1 - e**2))
+    p      = radius * (1 + e * np.cos(nu))
+    x      = radius * (np.cos(raan) * np.cos(aop + nu) - np.sin(raan) * np.sin(aop + nu) * np.cos(i))
+    y      = radius * (np.sin(raan) * np.cos(aop + nu) + np.cos(raan) * np.sin(aop + nu) * np.cos(i))
+    z      = radius * (np.sin(i) * np.sin(aop + nu))
+    r      = [x, y, z]
+    x_dot  = (((x * h * e) / (radius * p)) * np.sin(nu)) - (h / radius) * (np.cos(raan) * np.sin(aop + nu) + np.sin(raan) * np.cos(aop + nu) * np.cos(i))
+    y_dot  = (((y * h * e) / (radius * p)) * np.sin(nu)) - (h / radius) * (np.sin(raan) * np.sin(aop + nu) - np.cos(raan) * np.cos(aop + nu) * np.cos(i))
+    z_dot  = (((z * h * e) / (radius * p)) * np.sin(nu)) + (h / radius) * (np.sin(i) * np.cos(aop + nu))
+    v      = [x_dot, y_dot, z_dot]
+    return r, v
 
 def rv2coes(r,v, deg=False, mu=planetary_data.earth['mu']):
     h=np.cross(r,v) #angular momentum
@@ -216,10 +203,13 @@ def rv2coes(r,v, deg=False, mu=planetary_data.earth['mu']):
     return [a,e_norm,i,nu,aop,lan]
 
 def ecc_anom(m,e):
+    m = float(m)
+    e = float(e)
     res=m
     if e!=0:
-        f=lambda x: x-e*math.sin(x)-m
+        f=lambda x: x-e*np.sin(x)-m
         res=fsolve(f, [50])
+        return float(res[0])
     return res
 
 def tle2coes(filename, mu=planetary_data.earth['mu']):
@@ -279,7 +269,7 @@ def n_tle2coes(filename, n_objects, t0, mu=planetary_data.earth['mu']):
 def perif2eq(rv, coes):
     return 0
 
-def plot_n_orbits_animate(rs, step_t, labels, cb, show_plot=False, save=False, au_units=False, equal_axes=True, interval=0.01, save_file='matplot003.mp4'):
+def plot_n_orbits_animate(rs, step_t, labels, cb, show_plot=False, save=False, au_units=False, equal_axes=True, interval=10, frame_step=5, save_file='matplot003.mp4'):
     fig = plt.figure(figsize=(12, 12))
     ax = fig.add_subplot(111, projection='3d')
     ax.set_aspect('equal')
@@ -317,15 +307,14 @@ def plot_n_orbits_animate(rs, step_t, labels, cb, show_plot=False, save=False, a
     ax.plot(zeros, zeros, line, color='black', alpha=0.75)
 
     def update(num, data, line2_lst, current_poses):
-        hr=(step_t*num)//3600
+        hr = (step_t * num) // 3600
         for i in range(len(data)):
             ax.set_title("time: {} hrs".format(hr))
-            line2_lst[i].set_data(data[i][:num, :2].transpose())
+            line2_lst[i].set_data(data[i][:num, 0], data[i][:num, 1])
             line2_lst[i].set_3d_properties(data[i][:num, 2])
-            # plot current position
-            current_poses[i].set_data(data[i][num, :2].transpose())
-            current_poses[i].set_3d_properties(data[i][num, 2])
-        if num==N:
+            current_poses[i].set_data([data[i][num, 0]], [data[i][num, 1]])
+            current_poses[i].set_3d_properties([data[i][num, 2]])
+        if num == N:
             return 0
 
 
@@ -347,7 +336,8 @@ def plot_n_orbits_animate(rs, step_t, labels, cb, show_plot=False, save=False, a
     plt.legend()
 
     print("animating...")
-    ani = animation.FuncAnimation(fig, update, N, fargs=(data, line2_lst, current_poses), interval=interval, blit=False, repeat=True)
+    frames = range(0, N, frame_step)
+    ani = animation.FuncAnimation(fig, update, frames, fargs=(data, line2_lst, current_poses), interval=interval, blit=False, repeat=True)
     print("done!")
 
 
@@ -469,7 +459,7 @@ def plot_pert_coes(coes, ts, labels,  hours=False, days=False):
 
 def get_sats_from_file(sat_names, t0, mu=planetary_data.earth['mu']):
     print(sat_names)
-    directory = '../data'
+    directory = 'data'
     files=[]
     labels = []
     coes_lst = []
@@ -565,6 +555,37 @@ def load_solar_system_kernels():
     '$SRCDIR/spice_solar_system/Voyager_1.a54206u_V0.2_merged.bsp',
     '$SRCDIR/spice_solar_system/Voyager_2.m05016u.merged.bsp',
     '$SRCDIR/spice_solar_system/pck00011.tpc',
+    '$SRCDIR/spice_solar_system/naif0012.tls'
+    )
+    \\begintext
+    """
+
+    # Write temporary metakernel and load it
+    mk_path = os.path.join(SRC_DIR, 'temp_kernel.tm')
+    with open(mk_path, 'w') as f:
+        f.write(mk_content)
+
+    spice.kclear()
+    spice.furnsh(mk_path)
+
+    # Clean up temp file
+    os.remove(mk_path)
+
+def load_earth_moon_kernels():
+    SRC_DIR = os.path.dirname(os.path.abspath(__file__)).replace('\\', '/')
+    # Generate metakernel content dynamically
+    mk_content = f"""\\begindata
+
+    PATH_VALUES = ('{SRC_DIR}')
+    PATH_SYMBOLS = ('SRCDIR')
+
+    KERNELS_TO_LOAD=(
+    '$SRCDIR/spice_lunar/de440.bsp',
+    '$SRCDIR/spice_lunar/moon_de440_220930.tf',
+    '$SRCDIR/spice_lunar/moon_pa_de440_200625.bpc',
+    '$SRCDIR/spice_lunar/clem_nrl.bsp',
+    '$SRCDIR/spice_lunar/clem_v20.tf'
+    '$SRCDIR/spice_solar_system/latest_leapseconds.tls',
     '$SRCDIR/spice_solar_system/naif0012.tls'
     )
     \\begintext

@@ -96,7 +96,7 @@ class interplanetary_interface:
 
             #call the required plot
             if animate:
-                t.plot_n_orbits_animate(self.props, step_t=dt, labels=labels, cb=cb, show_plot=show, save=save, au_units=au, save_file=save_file)
+                t.plot_n_orbits_animate(self.props,interval=1, frame_step=100, step_t=dt, labels=labels, cb=cb, show_plot=show, save=save, au_units=au, save_file=save_file)
             else:
                 t.plot_n_orbits(self.props, step_t=dt, labels=labels, cb=cb, show_plot=show, save_plot=save, au_units=au, save_file=save_file)
 

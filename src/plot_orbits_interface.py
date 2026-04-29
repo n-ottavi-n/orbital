@@ -30,9 +30,9 @@ def plot_orbits(satellite_names, bodies, start_date, end_date, perturbations,cen
 
 
     if central_body['name']=='earth':
-        spice.furnsh('../spice_lunar/earth_moon_kernel.txt')
+        t.load_earth_moon_kernels()
     else:
-        spice.furnsh('../spice_solar_system/solar_system_kernel.txt')
+        t.load_solar_system_kernels()
 
     etOne = spice.str2et(start_date)
     etTwo = spice.str2et(end_date)
@@ -80,6 +80,6 @@ def plot_orbits(satellite_names, bodies, start_date, end_date, perturbations,cen
     else:
         t.plot_n_orbits(props, step_t=dt, labels=labels, cb=central_body, show_plot=show, save_plot=save, au_units=au, save_file=save_file)
 '''
-    t.plot_n_orbits_animate(props, step_t=dt, labels=labels, cb=central_body, show_plot=show, save=save, au_units=au, save_file=save_file)
+    t.plot_n_orbits_animate(props, frame_step=5, step_t=dt, labels=labels, cb=central_body, show_plot=show, save=save, au_units=au, save_file=save_file)
 
 

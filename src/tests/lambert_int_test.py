@@ -1,9 +1,9 @@
 from lambert_interface import lambert_interface
 import planetary_data
 import spiceypy as spice
+from tools import load_solar_system_kernels
 
-spice.kclear()
-spice.furnsh('../spice_solar_system/solar_system_kernel.txt')
+load_solar_system_kernels()
 
 start_date='Oct 26, 2029, 04:00 UTC'
 arrival_date='Apr 04, 2030, 00:00 UTC'

@@ -1,9 +1,9 @@
 import planetary_data
 from interplanetary_interface import interplanetary_interface
 import spiceypy as spice
+from tools import load_solar_system_kernels
 
-spice.kclear()
-spice.furnsh('../spice_solar_system/solar_system_kernel.txt')
+load_solar_system_kernels()
 
 perturbations=[planetary_data.earth,planetary_data.venus, planetary_data.jupiter]
 bodies=['earth','venus']
@@ -27,4 +27,4 @@ sc_data={
 
 
 int=interplanetary_interface(states,bodies,t0,tf, perturbations, central_body=cb, sc_data=sc_data, steps=10000)
-int.plot_trajectory(animate=False,show=True, save=False)
+int.plot_trajectory(animate=True,show=True, save=False)
