@@ -9,6 +9,7 @@ import datetime as date
 from datetime import datetime
 import os
 import pandas as pd
+import spiceypy as spice
 
 def plot_3d(rs, cb, show_plot=False, save_plot=False, au_units=False):
     fig = plt.figure(figsize=(10, 10))
@@ -252,7 +253,7 @@ def n_tle2coes(filename, n_objects, t0, mu=planetary_data.earth['mu']):
 
         # get elements
         line1 = f.readline()
-        line2 = re.split("\s+", f.readline().strip())
+        line2 = re.split(r"\s+", f.readline().strip())
         i = float(line2[2])
         raan = float(line2[3])
         e = float('0.' + line2[4])
@@ -483,7 +484,7 @@ def get_sats_from_file(sat_names, t0, mu=planetary_data.earth['mu']):
                     labels.append(name)
                     #read the next two lines
                     line1 = f.readline()
-                    line2 = re.split("\s+", f.readline().strip())
+                    line2 = re.split(r"\s+", f.readline().strip())
                     coes=get_coes_from_tle(line1, line2, t0, mu)
                     coes_lst.append(coes)
             f.close()
@@ -544,4 +545,40 @@ def create_dataframe_and_write_to_csv(satellite_names):
 
     return df
 
+def load_solar_system_kernels():
+    SRC_DIR = os.path.dirname(os.path.abspath(__file__)).replace('\\', '/')
+    # Generate metakernel content dynamically
+    mk_content = f"""\\begindata
 
+    PATH_VALUES = ('{SRC_DIR}')
+    PATH_SYMBOLS = ('SRCDIR')
+
+    KERNELS_TO_LOAD=(
+    '$SRCDIR/spice_solar_system/codes_300ast_20100725.bsp',
+    '$SRCDIR/spice_solar_system/codes_300ast_20100725.tf',
+    '$SRCDIR/spice_lunar/de440.bsp',
+    '$SRCDIR/spice_solar_system/latest_leapseconds.tls',
+    '$SRCDIR/spice_solar_system/mro_cruise.bsp',
+    '$SRCDIR/spice_solar_system/mro_v16.tf',
+    '$SRCDIR/spice_solar_system/vg1_v02.tf',
+    '$SRCDIR/spice_solar_system/vg2_v02.tf',
+    '$SRCDIR/spice_solar_system/Voyager_1.a54206u_V0.2_merged.bsp',
+    '$SRCDIR/spice_solar_system/Voyager_2.m05016u.merged.bsp',
+    '$SRCDIR/spice_solar_system/pck00011.tpc',
+    '$SRCDIR/spice_solar_system/naif0012.tls'
+    )
+    \\begintext
+    """
+
+    # Write temporary metakernel and load it
+    mk_path = os.path.join(SRC_DIR, 'temp_kernel.tm')
+    with open(mk_path, 'w') as f:
+        f.write(mk_content)
+
+    print(mk_content)
+
+    spice.kclear()
+    spice.furnsh(mk_path)
+
+    # Clean up temp file
+    os.remove(mk_path)

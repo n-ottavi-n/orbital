@@ -1,14 +1,7 @@
 from porkchop_interface import porkchop_interface
-import spiceypy as spice
+from tools import load_solar_system_kernels
 
-spice.kclear()
-
-import os
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SPICE_DIR = os.path.normpath(os.path.join(BASE_DIR, '..', 'spice_solar_system'))
-os.chdir(os.path.join(BASE_DIR, '..'))  # set working dir to src/
-spice.furnsh(os.path.join(SPICE_DIR, 'solar_system_kernel.txt'))
-
+load_solar_system_kernels()
 
 origin_body = "EARTH" # must be SPICE bodies
 target_body = "CERES"

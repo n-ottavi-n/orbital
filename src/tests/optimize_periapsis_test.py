@@ -1,18 +1,13 @@
 from optimize_periapsis import optimize_periapsis
-import spiceypy as spice
 from lambert_interface import lambert_interface
 import planetary_data
 from arrival_orbit_elements import arrival_orbit_elements
 from plot_approach import plot_approach
 import matplotlib.pyplot as plt
+from tools import load_solar_system_kernels
 
-spice.kclear()
 
-import os
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SPICE_DIR = os.path.normpath(os.path.join(BASE_DIR, '..', 'spice_solar_system'))
-os.chdir(os.path.join(BASE_DIR, '..'))  # set working dir to src/
-spice.furnsh(os.path.join(SPICE_DIR, 'solar_system_kernel.txt'))
+load_solar_system_kernels()
 
 start_date='JAN 30, 2028, 23:00 UTC'
 arrival_date='DEC 09, 2028, 00:00 UTC'
