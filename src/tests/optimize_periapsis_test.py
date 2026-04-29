@@ -1,6 +1,7 @@
 from optimize_periapsis import optimize_periapsis
 from lambert_interface import lambert_interface
 import planetary_data
+from planetary_data import get_body, get_bodies
 from arrival_orbit_elements import arrival_orbit_elements
 from plot_approach import plot_approach
 import matplotlib.pyplot as plt
@@ -15,14 +16,16 @@ end_date='DEC 30, 2028, 00:00 UTC'
 
 origin='EARTH'
 dest='CERES'
+perts=['EARTH', 'MOON', 'MARS']
 
-des_inc = 25 # desired inclination at arrival in deg
+perturbations=get_bodies(perts)
+
+des_inc = None # desired inclination at arrival in deg
 des_pe = 300 # desired periapsis at arrival in km
 
-mu_body=planetary_data.ceres['mu']
 
-perturbations=[planetary_data.earth, planetary_data.moon,]
-
+mu_body = get_body(dest)['mu']
+radius = get_body(dest)['radius']
 
 # phase 1: fast coarse optimization
 result_coarse = optimize_periapsis(

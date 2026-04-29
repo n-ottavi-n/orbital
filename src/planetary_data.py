@@ -72,3 +72,24 @@ saturn={
     'radius':60268.0,
     'j2':0.01645
 }
+
+
+def get_body(name):
+    bodies = {
+        'SUN': sun,
+        'MERCURY': mercury,
+        'VENUS': venus,
+        'EARTH': earth,
+        'MOON': moon,
+        'MARS': mars,
+        'CERES': ceres,
+        'JUPITER': jupiter,
+        'SATURN': saturn,
+    }
+    result = bodies.get(name.upper())
+    if result is None:
+        raise ValueError(f"Unknown body: '{name}'. Available: {list(bodies.keys())}")
+    return result
+
+def get_bodies(names):
+    return [get_body(name) for name in names]

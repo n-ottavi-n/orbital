@@ -575,8 +575,6 @@ def load_solar_system_kernels():
     with open(mk_path, 'w') as f:
         f.write(mk_content)
 
-    print(mk_content)
-
     spice.kclear()
     spice.furnsh(mk_path)
 
