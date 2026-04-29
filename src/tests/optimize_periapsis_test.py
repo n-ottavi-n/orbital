@@ -2,6 +2,7 @@ from optimize_periapsis import optimize_periapsis
 from lambert_interface import lambert_interface
 import planetary_data
 from planetary_data import get_body, get_bodies
+from departure_orbit_elements import departure_orbit_elements
 from arrival_orbit_elements import arrival_orbit_elements
 from plot_approach import plot_approach
 import matplotlib.pyplot as plt
@@ -10,21 +11,22 @@ from tools import load_solar_system_kernels
 
 load_solar_system_kernels()
 
-start_date='JAN 30, 2028, 23:00 UTC'
-arrival_date='DEC 09, 2028, 00:00 UTC'
-end_date='DEC 30, 2028, 00:00 UTC'
+start_date='DEC 01, 2028, 23:00 UTC'
+arrival_date='JUL 01, 2029, 00:00 UTC'
+end_date='JUL 30, 2029, 00:00 UTC'
 
 origin='EARTH'
-dest='CERES'
-perts=['EARTH', 'MOON', 'MARS']
+dest='MARS'
+perts=['EARTH', 'MOON']
 
 perturbations=get_bodies(perts)
 
-des_inc = None # desired inclination at arrival in deg
+des_inc = 25 # desired inclination at arrival in deg
 des_pe = 300 # desired periapsis at arrival in km
 
 
-mu_body = get_body(dest)['mu']
+mu_body_dest = get_body(dest)['mu']
+mu_body_origin = get_body(origin)['mu']
 radius = get_body(dest)['radius']
 
 # phase 1: fast coarse optimization
@@ -35,7 +37,7 @@ result_coarse = optimize_periapsis(
     1000,
     perturbations,
     periapsis_altitude_km=des_pe,
-    mu_body=mu_body,
+    mu_body=mu_body_dest,
     inc_target_deg=des_inc,
     arrival_window_days=30,
     max_iter=200
@@ -49,7 +51,7 @@ result = optimize_periapsis(
     5000,
     perturbations,
     periapsis_altitude_km=des_pe,
-    mu_body=mu_body,
+    mu_body=mu_body_dest,
     inc_target_deg=des_inc,
     arrival_window_days=30,
     max_iter=150,
@@ -57,12 +59,15 @@ result = optimize_periapsis(
     dt0=result_coarse["dt_arrival_days"]
 )
 
-print(result)
-
 
 solved_sim = result["sim_object"]
-arrival = arrival_orbit_elements(solved_sim, dest, mu_body)
+arrival = arrival_orbit_elements(solved_sim, dest, mu_body_dest)
+departure = departure_orbit_elements(solved_sim, origin, mu_body_origin)
 print(arrival)
+print(departure)
 
-fig, ax = plot_approach(arrival, body_name=dest, body_radius_km=470)
-plt.show()
+total_flight_time_days = (arrival["epoch_et"] - departure["injection_et"]) / 86400
+print("TOF: ",total_flight_time_days, " days")
+
+#fig, ax = plot_approach(arrival, body_name=dest, body_radius_km=470)
+#plt.show()

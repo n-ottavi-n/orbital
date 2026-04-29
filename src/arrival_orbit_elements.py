@@ -142,6 +142,7 @@ def arrival_orbit_elements(sim, body, mu_body):
 
     return {
         "epoch_et": epoch,
+        "arrival_utc": spice.et2utc(epoch, "C", 0),
         "range_km": rmag, # minimum |r_sc - r_Mars| in simulation
 
         "semi_major_axis_km": a,
