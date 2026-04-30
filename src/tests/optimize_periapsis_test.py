@@ -1,19 +1,18 @@
 from optimize_periapsis import optimize_periapsis
 from lambert_interface import lambert_interface
-import planetary_data
 from planetary_data import get_body, get_bodies
 from departure_orbit_elements import departure_orbit_elements
 from arrival_orbit_elements import arrival_orbit_elements
+from plot_departure import plot_departure
 from plot_approach import plot_approach
-import matplotlib.pyplot as plt
 from tools import load_solar_system_kernels
 
 
 load_solar_system_kernels()
 
-start_date='DEC 01, 2028, 23:00 UTC'
-arrival_date='JUL 01, 2029, 00:00 UTC'
-end_date='JUL 30, 2029, 00:00 UTC'
+start_date='JAN 30, 2031, 23:00 UTC'
+arrival_date='JUL 12, 2031, 00:00 UTC'
+end_date='JUL 30, 2031, 00:00 UTC'
 
 origin='EARTH'
 dest='MARS'
@@ -21,7 +20,7 @@ perts=['EARTH', 'MOON']
 
 perturbations=get_bodies(perts)
 
-des_inc = 25 # desired inclination at arrival in deg
+des_inc = 45 # desired inclination at arrival in deg
 des_pe = 300 # desired periapsis at arrival in km
 
 
@@ -61,13 +60,12 @@ result = optimize_periapsis(
 
 
 solved_sim = result["sim_object"]
-arrival = arrival_orbit_elements(solved_sim, dest, mu_body_dest)
+
 departure = departure_orbit_elements(solved_sim, origin, mu_body_origin)
-print(arrival)
+arrival = arrival_orbit_elements(solved_sim, dest, mu_body_dest)
+
 print(departure)
+print(arrival)
 
 total_flight_time_days = (arrival["epoch_et"] - departure["injection_et"]) / 86400
 print("TOF: ",total_flight_time_days, " days")
-
-#fig, ax = plot_approach(arrival, body_name=dest, body_radius_km=470)
-#plt.show()

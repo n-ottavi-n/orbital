@@ -548,6 +548,8 @@ def load_solar_system_kernels():
     '$SRCDIR/spice_solar_system/codes_300ast_20100725.tf',
     '$SRCDIR/spice_lunar/de440.bsp',
     '$SRCDIR/spice_solar_system/latest_leapseconds.tls',
+    '$SRCDIR/spice_solar_system/mars_iau2000_v1.tpc',
+    '$SRCDIR/spice_solar_system/mar099s.bsp',
     '$SRCDIR/spice_solar_system/mro_cruise.bsp',
     '$SRCDIR/spice_solar_system/mro_v16.tf',
     '$SRCDIR/spice_solar_system/vg1_v02.tf',
