@@ -12,6 +12,7 @@ def plot_approach(elements: dict, body_name: str = "target", body_radius_km: flo
     rp    = elements["periapsis_km"]
     nu_ca = np.radians(elements["true_anomaly_deg"])
     vinf  = elements["vinf_km_s"]
+    arrival_utc = elements['arrival_utc']
 
     if body_radius_km is None:
         body_radius_km = rp - elements["periapsis_altitude_km"]
@@ -156,13 +157,14 @@ def plot_approach(elements: dict, body_name: str = "target", body_radius_km: flo
 
     ax.grid(True, color="#dddddd", linewidth=0.4)                      # CHANGED
 
-    e_label = ("hyperbolic" if e > 1 else "elliptic" if e < 1 else "parabolic")
+    #e_label = ("hyperbolic" if e > 1 else "elliptic" if e < 1 else "parabolic")
     title = (
-        f"{body_name} approach  —  {e_label}\n"
+        f"{body_name} approach — IAU frame\n"
         f"e = {e:.4f}   rp = {rp:.0f} km   "
         f"alt = {elements['periapsis_altitude_km']:.0f} km   "
         f"i = {elements['inclination_deg']:.1f}°   "
-        f"ΔV capture (parabolic) = {delta_v_capture:.3f} km/s"                    # NEW
+        f"ΔV capture (parabolic) = {delta_v_capture:.3f} km/s\n"        
+        f"arrival: {arrival_utc}   "            # NEW
     )
     ax.set_title(title, color="black", fontsize=10, pad=10)            # CHANGED
     ax.legend(loc="upper left", fontsize=8,
