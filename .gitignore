@@ -4,3 +4,4 @@
 __pycache__/
 src/spice_solar_system/mar099s.bsp
 src/spice_solar_system/mars_iau2000_v1.tpc
+src/apps/earth_app.py

@@ -95,10 +95,10 @@ def optimize_periapsis(
         try:
             elements = run_trial(u)
             err = elements["periapsis_km"] - rp_target
-            print(f"  rp err: {err:+.1f} km   "
+            '''print(f"  rp err: {err:+.1f} km   "
                   f"rp: {elements['periapsis_km']:.1f} km   "
                   f"dt: {u[3]:+.2f} days   "
-                  f"dv: {np.linalg.norm(u[:3])*1000:.1f} m/s")
+                  f"dv: {np.linalg.norm(u[:3])*1000:.1f} m/s")'''
             return err
         except Exception as e:
             print("constraint_periapsis failed:", e)
@@ -115,8 +115,8 @@ def optimize_periapsis(
             try:
                 elements = run_trial(u)
                 err = elements["inclination_deg"] - inc_target_deg
-                print(f"  inc err: {err:+.2f} deg   "
-                      f"inc: {elements['inclination_deg']:.2f} deg")
+                '''print(f"  inc err: {err:+.2f} deg   "
+                      f"inc: {elements['inclination_deg']:.2f} deg")'''
                 return inc_tol_deg - abs(err)  # ineq: must be >= 0
             except Exception as e:
                 print("constraint_inclination failed:", e)

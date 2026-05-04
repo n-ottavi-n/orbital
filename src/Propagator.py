@@ -67,7 +67,7 @@ class Propagator:
 
 
     def propagate(self):
-        print("propagating...")
+        #print("propagating...")
         #self.n_steps=int(np.ceil((self.tspan/self.dt)))
 
         self.ts = np.zeros((self.n_steps,1))

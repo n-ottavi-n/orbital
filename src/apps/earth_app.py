@@ -1,4 +1,4 @@
-from dash import Dash, html, dcc, Input, Output  # pip install dash
+'''from dash import Dash, html, dcc, Input, Output  # pip install dash
 import dash_ag_grid as dag
 import dash_bootstrap_components as dbc   # pip install dash-bootstrap-components
 
@@ -75,4 +75,4 @@ def plot_data(sat):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True)'''

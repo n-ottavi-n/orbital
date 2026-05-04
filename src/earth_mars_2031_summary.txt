@@ -1,0 +1,36 @@
+============================================================
+  MISSION DESIGN REPORT
+  EARTH → MARS
+============================================================
+
+  DEPARTURE
+    Injection burn:    2031 JAN 28 03:12:54
+    Parking orbit:     400 km  i = 25.06°
+    Departure ΔV:      3.693 km/s
+    C3:                11.429 km²/s²
+    v∞ departure:      3.381 km/s
+    Asymptote dec:     -25.06°
+    SOI exit:          2031 JAN 30 23:00:00
+    SOI transit:       67.8 h
+
+  TRANSFER
+    Total TOF:         164.9 days
+    Heliocentric TOF:  162.0 days
+    Arrival shift:     +0.00 days
+
+  ARRIVAL
+    Arrival epoch:     2031 JUL 11 23:53:53
+    v∞ arrival:        5.993 km/s
+    Capture ΔV:        2.867 km/s  (parabolic)
+    Periapsis alt:     300.0 km
+    Inclination:       27.00°  (target 25°)
+    Periapsis lat/lon: -26.30°  220.42°
+    Eccentricity:      4.0786
+    RAAN:              324.49°
+
+  MISSION ΔV BUDGET
+    Departure burn:    3.693 km/s
+    Capture burn:      2.867 km/s
+    ─────────────────────────────────
+    Total:             6.560 km/s
+============================================================
