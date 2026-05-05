@@ -2,6 +2,7 @@ import numpy as np
 import spiceypy as spice
 from scipy.optimize import minimize
 from arrival_orbit_elements import arrival_orbit_elements
+import planetary_data as pd
 
 
 def optimize_periapsis(
@@ -34,6 +35,7 @@ def optimize_periapsis(
     v0_nominal = sim.v0.copy()
     r0         = sim.start_r.copy()
 
+
     # --------------------------------------------------
     # RTN basis at departure
     # --------------------------------------------------
@@ -48,7 +50,7 @@ def optimize_periapsis(
     # Body radius and target periapsis
     # --------------------------------------------------
     try:
-        radii = spice.bodvrd(dest, "RADII", 3)[1]
+        radii = pd.get_body_radius(dest)
         body_radius = np.mean(radii)
     except:
         body_radius = 3396.0

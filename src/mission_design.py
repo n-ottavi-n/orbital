@@ -7,6 +7,7 @@ from arrival_orbit_elements import arrival_orbit_elements
 from departure_orbit_elements import departure_orbit_elements
 from plot_approach import plot_approach
 from plot_departure import plot_departure
+from plot_heliocentric import plot_heliocentric
 import planetary_data as pd
 from tools import load_solar_system_kernels
 
@@ -21,7 +22,8 @@ class MissionDesign:
                  periapsis_alt_km=300.0,
                  inc_target_deg=None,
                  parking_alt_km=400.0,
-                 arrival_window_days=30,
+                 perturbations=[],
+                 arrival_window_days=90,
                  steps_coarse=1000,
                  steps_fine=5000,
                  max_iter_coarse=200,
@@ -35,6 +37,7 @@ class MissionDesign:
         self.periapsis_alt_km  = periapsis_alt_km
         self.inc_target_deg    = inc_target_deg
         self.parking_alt_km    = parking_alt_km
+        self.perturbations     = perturbations
         self.arrival_window_days = arrival_window_days
         self.steps_coarse      = steps_coarse
         self.steps_fine        = steps_fine
@@ -60,7 +63,7 @@ class MissionDesign:
 
         # end date = arrival + window for propagation
         arrival_et  = spice.str2et(arrival_date)
-        end_et      = arrival_et + (arrival_window_days + 10) * 86400
+        end_et      = arrival_et + (arrival_window_days + 180) * 86400
         self.end_date = spice.et2utc(end_et, "C", 0)
 
     # --------------------------------------------------
@@ -86,7 +89,7 @@ class MissionDesign:
             self.origin, self.destination,
             self.launch_date, self.arrival_date, self.end_date,
             self.steps_coarse,
-            perturbations=[],
+            perturbations=self.perturbations,
             periapsis_altitude_km=self.periapsis_alt_km,
             mu_body=self.mu_dest,
             inc_target_deg=self.inc_target_deg,
@@ -108,7 +111,7 @@ class MissionDesign:
             self.origin, self.destination,
             self.launch_date, self.arrival_date, self.end_date,
             self.steps_fine,
-            perturbations=[],
+            perturbations=self.perturbations,
             periapsis_altitude_km=self.periapsis_alt_km,
             mu_body=self.mu_dest,
             inc_target_deg=self.inc_target_deg,
@@ -255,7 +258,15 @@ class MissionDesign:
             mu_body=self.mu_origin
         )
 
-        fig2, ax2 = plot_approach(
+        fig2, ax2 = plot_heliocentric(          
+        self.sim,
+        self.departure,
+        self.arrival,
+        origin=self.origin,
+        destination=self.destination
+        )
+
+        fig3, ax3 = plot_approach(
             self.arrival,
             body_name=self.destination.capitalize(),
             body_radius_km=self.radius_dest,
@@ -263,14 +274,14 @@ class MissionDesign:
         )
 
         if save_report:
-            self._save_report(fig1, fig2, report_path)
+            self._save_report(fig1, fig2, fig3, report_path)
             summary_path = report_path.replace(".png", "_summary.txt")
             self._save_summary(summary_path)
 
         plt.show()
 
     # --------------------------------------------------
-    def _save_report(self, fig1, fig2, path):
+    def _save_report(self, fig1, fig2, fig3, path):
         """
         Composite departure and arrival plots into a single image.
         """
@@ -286,14 +297,16 @@ class MissionDesign:
 
         img1 = fig_to_image(fig1)
         img2 = fig_to_image(fig2)
+        img3 = fig_to_image(fig3)
 
         # side by side
-        total_width  = img1.width + img2.width
-        total_height = max(img1.height, img2.height)
+        total_width  = img1.width + img2.width + img3.width
+        total_height = max(img1.height, img2.height, img3.height)
 
         combined = Image.new("RGB", (total_width, total_height), "white")
         combined.paste(img1, (0, 0))
         combined.paste(img2, (img1.width, 0))
+        combined.paste(img3, (img1.width + img2.width, 0))
         combined.save(path)
 
         self._log(f"Report saved to {path}")

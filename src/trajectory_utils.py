@@ -142,9 +142,16 @@ def compute_arrival_inclination(v_inf_arr_vec, target_body, epoch, mu_body=None)
 
     # get body pole direction in ECLIPJ2000
     # the z-axis of IAU_BODY frame is the north pole
-    tipm = spice.pxform(f"IAU_{target_body.upper()}", "ECLIPJ2000", epoch)
-    pole = tipm @ np.array([0.0, 0.0, 1.0])
-    pole_hat = pole / np.linalg.norm(pole)
+    # try to get the body's true pole from IAU frame
+    # small bodies often don't have IAU rotation models — fall back to ecliptic north
+    try:
+        tipm     = spice.pxform(f"IAU_{target_body.upper()}", "ECLIPJ2000", epoch)
+        pole     = tipm @ np.array([0.0, 0.0, 1.0])
+        pole_hat = pole / np.linalg.norm(pole)
+    except:
+        # no IAU frame available — use ecliptic north pole as reference
+        # inclination will be relative to the ecliptic plane
+        pole_hat = np.array([0.0, 0.0, 1.0])
 
     # inclination = angle between orbital plane normal and pole
     # orbital plane normal is perpendicular to v_inf (and to some periapsis vector)

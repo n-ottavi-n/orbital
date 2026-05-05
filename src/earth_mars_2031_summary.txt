@@ -1,36 +1,36 @@
 ============================================================
   MISSION DESIGN REPORT
-  EARTH → MARS
+  EARTH → JUPITER
 ============================================================
 
   DEPARTURE
-    Injection burn:    2031 JAN 28 03:12:54
-    Parking orbit:     400 km  i = 25.06°
-    Departure ΔV:      3.693 km/s
-    C3:                11.429 km²/s²
-    v∞ departure:      3.381 km/s
-    Asymptote dec:     -25.06°
-    SOI exit:          2031 JAN 30 23:00:00
-    SOI transit:       67.8 h
+    Injection burn:    2030 JAN 29 19:16:01
+    Parking orbit:     400 km  i = 11.74°
+    Departure ΔV:      6.470 km/s
+    C3:                82.263 km²/s²
+    v∞ departure:      9.070 km/s
+    Asymptote dec:     -11.74°
+    SOI exit:          2030 JAN 30 23:00:00
+    SOI transit:       27.7 h
 
   TRANSFER
-    Total TOF:         164.9 days
-    Heliocentric TOF:  162.0 days
+    Total TOF:         851.4 days
+    Heliocentric TOF:  850.2 days
     Arrival shift:     +0.00 days
 
   ARRIVAL
-    Arrival epoch:     2031 JUL 11 23:53:53
-    v∞ arrival:        5.993 km/s
-    Capture ΔV:        2.867 km/s  (parabolic)
-    Periapsis alt:     300.0 km
-    Inclination:       27.00°  (target 25°)
-    Periapsis lat/lon: -26.30°  220.42°
-    Eccentricity:      4.0786
-    RAAN:              324.49°
+    Arrival epoch:     2032 MAY 30 04:53:38
+    v∞ arrival:        0.000 km/s
+    Capture ΔV:        0.000 km/s  (parabolic)
+    Periapsis alt:     4000.0 km
+    Inclination:       20.00°  (target 22°)
+    Periapsis lat/lon: -19.54°  246.64°
+    Eccentricity:      0.7982
+    RAAN:              349.39°
 
   MISSION ΔV BUDGET
-    Departure burn:    3.693 km/s
-    Capture burn:      2.867 km/s
+    Departure burn:    6.470 km/s
+    Capture burn:      0.000 km/s
     ─────────────────────────────────
-    Total:             6.560 km/s
+    Total:             6.470 km/s
 ============================================================

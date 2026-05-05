@@ -550,12 +550,8 @@ def load_solar_system_kernels():
     '$SRCDIR/spice_solar_system/latest_leapseconds.tls',
     '$SRCDIR/spice_solar_system/mars_iau2000_v1.tpc',
     '$SRCDIR/spice_solar_system/mar099s.bsp',
-    '$SRCDIR/spice_solar_system/mro_cruise.bsp',
-    '$SRCDIR/spice_solar_system/mro_v16.tf',
-    '$SRCDIR/spice_solar_system/vg1_v02.tf',
-    '$SRCDIR/spice_solar_system/vg2_v02.tf',
-    '$SRCDIR/spice_solar_system/Voyager_1.a54206u_V0.2_merged.bsp',
-    '$SRCDIR/spice_solar_system/Voyager_2.m05016u.merged.bsp',
+    '$SRCDIR/spice_solar_system/jup348.bsp',
+    '$SRCDIR/spice_solar_system/54404085.bsp',
     '$SRCDIR/spice_solar_system/pck00011.tpc',
     '$SRCDIR/spice_solar_system/naif0012.tls'
     )

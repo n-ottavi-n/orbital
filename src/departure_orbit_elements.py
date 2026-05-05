@@ -1,6 +1,7 @@
 import numpy as np
 import spiceypy as spice
 import math
+import planetary_data as pd
 
 
 def departure_orbit_elements(sim, body, mu_body, parking_alt_km=400.0,
@@ -44,7 +45,7 @@ def departure_orbit_elements(sim, body, mu_body, parking_alt_km=400.0,
     # --------------------------------------------------
     # body radius and parking orbit
     # --------------------------------------------------
-    radii       = spice.bodvrd(body, "RADII", 3)[1]
+    radii       = pd.get_body_radius(body)
     body_radius = np.mean(radii)
     r_parking   = body_radius + parking_alt_km
 

@@ -57,6 +57,7 @@ class Propagator:
 
         self.body_names=[]
         self.r_cb2nb_lst=[]
+
         if self.bodies:
             for body in self.bodies:
                 self.body_names.append(body['name']) #for future debugging
@@ -90,6 +91,7 @@ class Propagator:
 
         self.rs=self.ys[:,:3]
         self.vs = self.ys[:,3:]
+
 
 
     def diffy_q(self, t, y):
