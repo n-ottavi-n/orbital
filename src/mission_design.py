@@ -152,7 +152,7 @@ class MissionDesign:
     # --------------------------------------------------
     def _assemble_summary(self):
 
-        tof_total = (self.arrival["epoch_et"] - self.departure["injection_et"]) / 86400
+        tof_total = (self.arrival["periapsis_et"] - self.departure["injection_et"]) / 86400
         tof_helio = (self.arrival["epoch_et"] - self.departure["departure_et"]) / 86400
 
         self.summary = {
@@ -174,7 +174,8 @@ class MissionDesign:
             "tof_heliocentric_days":   tof_helio,       # SOI exit → arrival periapsis
 
             # arrival
-            "arrival_utc":             spice.et2utc(self.arrival["epoch_et"], "C", 0),
+            "arrival_utc":             spice.et2utc(self.arrival["epoch_et"], "C", 0), #time of SOI crossing
+            "insertion_utc":           self.arrival['periapsis_utc'],
             "arrival_shift_days":      self.result["dt_arrival_days"],
             "vinf_arr_km_s":           self.arrival["vinf_km_s"],
             "capture_dv_km_s":         (np.sqrt(self.arrival["vinf_km_s"]**2 +
@@ -227,6 +228,7 @@ class MissionDesign:
 
         print(f"\n  ARRIVAL")
         print(f"    Arrival epoch:     {s['arrival_utc']}")
+        print(f"    Insertion burn:    {s['insertion_utc']}")
         print(f"    v∞ arrival:        {s['vinf_arr_km_s']:.3f} km/s")
         print(f"    Capture ΔV:        {s['capture_dv_km_s']:.3f} km/s  (parabolic)")
         print(f"    Periapsis alt:     {s['periapsis_alt_km']:.1f} km")
@@ -259,11 +261,11 @@ class MissionDesign:
         )
 
         fig2, ax2 = plot_heliocentric(          
-        self.sim,
-        self.departure,
-        self.arrival,
-        origin=self.origin,
-        destination=self.destination
+            self.sim,
+            self.departure,
+            self.arrival,
+            origin=self.origin,
+            destination=self.destination
         )
 
         fig3, ax3 = plot_approach(
@@ -345,6 +347,7 @@ class MissionDesign:
 
             f.write(f"\n  ARRIVAL\n")
             f.write(f"    Arrival epoch:     {s['arrival_utc']}\n")
+            f.write(f"    Insertion burn:    {s['insertion_utc']}\n")
             f.write(f"    v∞ arrival:        {s['vinf_arr_km_s']:.3f} km/s\n")
             f.write(f"    Capture ΔV:        {s['capture_dv_km_s']:.3f} km/s  (parabolic)\n")
             f.write(f"    Periapsis alt:     {s['periapsis_alt_km']:.1f} km\n")

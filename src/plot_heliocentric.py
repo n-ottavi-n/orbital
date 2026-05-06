@@ -48,6 +48,18 @@ def plot_heliocentric(sim, departure: dict, arrival: dict,
     dep_idx = np.argmin(np.abs(times - dep_et))
     arr_idx = np.argmin(np.abs(times - arr_et))
 
+    # find indices before clipping
+    dep_idx = np.argmin(np.abs(times - dep_et))
+    arr_idx = np.argmin(np.abs(times - arr_et))   
+
+    # clip trajectory at SOI entry
+    soi_idx = arrival.get("soi_entry_idx", len(traj))
+    arr_idx = min(arr_idx, soi_idx - 1)   # clamp to valid range 
+
+    traj     = traj[:soi_idx]
+    r_origin = r_origin[:soi_idx]
+    r_dest   = r_dest[:soi_idx]
+
     sc_dep = traj[dep_idx]
     sc_arr = traj[arr_idx]
 

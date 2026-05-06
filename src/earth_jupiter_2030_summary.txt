@@ -14,12 +14,13 @@
     SOI transit:       28.1 h
 
   TRANSFER
-    Total TOF:         842.7 days
+    Total TOF:         925.6 days
     Heliocentric TOF:  841.5 days
     Arrival shift:     +0.00 days
 
   ARRIVAL
     Arrival epoch:     2032 MAY 21 12:14:41
+    Insertion burn:    2032 AUG 12 10:00:20
     v∞ arrival:        5.385 km/s
     Capture ΔV:        0.257 km/s  (parabolic)
     Periapsis alt:     10000.0 km

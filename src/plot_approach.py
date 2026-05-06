@@ -13,6 +13,7 @@ def plot_approach(elements: dict, body_name: str = "target", body_radius_km: flo
     nu_ca = np.radians(elements["true_anomaly_deg"])
     vinf  = elements["vinf_km_s"]
     arrival_utc = elements['arrival_utc']
+    insertion_utc = elements['periapsis_utc']
 
     if body_radius_km is None:
         body_radius_km = rp - elements["periapsis_altitude_km"]
@@ -164,7 +165,7 @@ def plot_approach(elements: dict, body_name: str = "target", body_radius_km: flo
         f"alt = {elements['periapsis_altitude_km']:.0f} km   "
         f"i = {elements['inclination_deg']:.1f}°   "
         f"ΔV capture (parabolic) = {delta_v_capture:.3f} km/s\n"        
-        f"arrival: {arrival_utc}   "            # NEW
+        f"insertion: {insertion_utc}   "            # NEW
     )
     ax.set_title(title, color="black", fontsize=10, pad=10)            # CHANGED
     ax.legend(loc="upper left", fontsize=8,

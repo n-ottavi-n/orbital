@@ -163,9 +163,30 @@ def arrival_orbit_elements(sim, body, mu_body, mu_central=1.32712440018e11):
     lat = math.degrees(math.asin(np.clip(r_peri[2] / r_peri_norm, -1, 1)))
     lon = math.degrees(math.atan2(r_peri[1], r_peri[0])) % 360
 
+    # time from SOI entry to periapsis — hyperbolic TOF equation
+    # at SOI entry: true anomaly = nu (already computed)
+    # at periapsis: true anomaly = 0
+
+    nu_soi   = math.radians(nu)   # true anomaly at SOI entry
+
+    # hyperbolic anomaly at SOI entry
+    F_soi    = 2.0 * math.atanh(
+        math.sqrt((e - 1.0) / (e + 1.0)) * math.tan(nu_soi / 2.0)
+    )
+
+    # time from periapsis to SOI entry (then negate for SOI entry to periapsis)
+    t_to_peri = math.sqrt((-a)**3 / mu_body) * (e * math.sinh(F_soi) - F_soi)
+
+    # periapsis epoch
+    periapsis_et  = epoch - t_to_peri   # subtract because spacecraft is inbound
+    periapsis_utc = spice.et2utc(periapsis_et, "C", 0)
+
     return {
         "epoch_et":              epoch,
         "arrival_utc":           spice.et2utc(epoch, "C", 0),
+        "periapsis_et":          periapsis_et,
+        "periapsis_utc":         periapsis_utc,
+        "t_soi_to_periapsis_hours": t_to_peri,
         "range_km":              rmag,
         "mode":                  mode,              # SOI entry or closest approach
 
@@ -190,5 +211,6 @@ def arrival_orbit_elements(sim, body, mu_body, mu_central=1.32712440018e11):
         "periapsis_latitude_deg":  lat,
         "periapsis_longitude_deg": lon,
 
+        "soi_entry_idx": i,    # index into sim.times where spacecraft enters SOI
         "r_soi_km":              r_soi,             # for reference
     }
