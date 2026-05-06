@@ -9,8 +9,7 @@ target_body = "JUPITER"
 launch_date = "2030 JAN 17 00:00:00"
 arrival_date = "2032 APR 15 00:00:00"
 
-max_tof = 1500 # in days solutions longer than this will not be tested
 max_c3 = 400 # c3 values above this will be masked
 
-int = porkchop_interface(origin_body, target_body, launch_date, arrival_date, max_tof, max_c3,span=90, grid_res=7)
+int = porkchop_interface(origin_body, target_body, launch_date, arrival_date, max_c3,span=180, grid_res=7)
 int.plot()

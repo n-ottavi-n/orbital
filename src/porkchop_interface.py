@@ -16,7 +16,7 @@ def et_to_datetime(et):
 
 
 class porkchop_interface:
-    def __init__(self,origin_body, target_body, launch_date, arrival_date, max_tof, max_c3, span=90, grid_res=5, mu=1.32712440018e11):
+    def __init__(self,origin_body, target_body, launch_date, arrival_date, max_c3, span=90, grid_res=5, mu=1.32712440018e11):
 
         base_launch = spice.str2et(launch_date)
         base_arrival = spice.str2et(arrival_date)
@@ -36,7 +36,6 @@ class porkchop_interface:
         self.origin_body = origin_body
         self.target_body = target_body
 
-        self.max_tof = max_tof
         self.max_c3 = max_c3
 
 
@@ -47,6 +46,8 @@ class porkchop_interface:
         self.arrivals = np.arange(base_arrival - arrival_span,
                               base_arrival + arrival_span,
                               step)
+        
+        self.max_tof = (self.arrivals[-1] - self.launches[0]) / 86400
 
 
 
@@ -202,18 +203,41 @@ class porkchop_interface:
         plt.colorbar(cf, label="C3 (km^2/s^2)")
 
         # plot C3 contours
-        c3_levels = np.arange(10, 100, 5) #resolution of c3 values
+        c3_min = np.nanmin(C3_masked)
 
-        cs = plt.contour(launches/86400,
-                          arrivals/86400,
-                          C3_masked.T,
-                         levels=c3_levels,
-                         linewidths=0.8)
+        # aim for ~10-15 contour lines, rounded to clean intervals
+        range_c3 = max_c3 - c3_min
+        step = round(range_c3 / 12)   # ~12 levels
+        step = max(step, 1)            # minimum step of 1
 
-        plt.clabel(cs, inline=True, fontsize=8, fmt="%.1f")
+        c3_levels = np.arange(
+            round(c3_min / step) * step,
+            round(max_c3 / step) * step + step,
+            step
+        )
+
+        # C3 contours — white labels with dark outline for visibility
+        cs = plt.contour(launches/86400, arrivals/86400, C3_masked.T,
+                        levels=c3_levels, linewidths=0.8, colors='yellow')
+        plt.clabel(cs, inline=True, fontsize=8, fmt="%.0f",
+                inline_spacing=5)
+        for text in cs.labelTexts:
+            text.set_color('white')
+            text.set_backgroundcolor('none')
+            text.set_fontweight('bold')
 
         # plot  arrival v_inf contours
-        vinf_levels = np.arange(2, 20, 1)  # km/s, adjust as needed
+        vinf_min = np.nanmin(VINF_ARR)
+        vinf_max = np.nanmax(VINF_ARR)
+
+        range_vinf = vinf_max - vinf_min
+        step_vinf  = max(round(range_vinf / 10, 1), 0.5)  # ~10 levels, min step 0.5 km/s
+
+        vinf_levels = np.arange(
+            round(vinf_min / step_vinf) * step_vinf,
+            round(vinf_max / step_vinf) * step_vinf + step_vinf,
+            step_vinf
+        )
 
         cs_vinf = plt.contour(launches/86400,
                               arrivals/86400,
@@ -232,7 +256,16 @@ class porkchop_interface:
             for j, t1 in enumerate(arrivals):
                 TOF[i, j] = (t1 - t0) / 86400  # days
 
-        tof_levels = np.arange(100, max_tof, 20) #resolution of flight times
+        tof_min = np.nanmin(TOF[~np.isnan(C3_plot)])   # only where C3 is valid
+        tof_max = self.max_tof
+
+        step_tof = max(round((tof_max - tof_min) / 10 / 10) * 10, 10)  # rounded to nearest 10 days
+
+        tof_levels = np.arange(
+            round(tof_min / step_tof) * step_tof,
+            tof_max,
+            step_tof
+        )
 
         cs_tof = plt.contour(launches/86400,
                              arrivals/86400,
@@ -253,7 +286,7 @@ class porkchop_interface:
             levels=inc_levels,
             linestyles='solid',
             linewidths=0.8,
-            colors='white'
+            colors='orange'
         )
         plt.clabel(cs_inc, inline=True, fontsize=7, fmt="%d°")
 
