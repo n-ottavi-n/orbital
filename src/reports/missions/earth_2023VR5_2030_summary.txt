@@ -1,0 +1,36 @@
+============================================================
+  MISSION DESIGN REPORT
+  EARTH → 54404085
+============================================================
+
+  DEPARTURE
+    Injection burn:    2030 MAR 22 12:46:22
+    Parking orbit:     400 km  i = 16.89°
+    Departure ΔV:      3.908 km/s
+    C3:                16.371 km²/s²
+    v∞ departure:      4.046 km/s
+    Asymptote dec:     -16.89°
+    SOI exit:          2030 MAR 24 23:00:00
+    SOI transit:       58.2 h
+
+  TRANSFER
+    Total TOF:         194.5 days
+    Heliocentric TOF:  192.0 days
+    Arrival shift:     -0.00 days
+
+  ARRIVAL
+    Arrival epoch:     2030 OCT 02 23:54:16
+    v∞ arrival:        3.054 km/s
+    Capture ΔV:        3.054 km/s  (parabolic)
+    Periapsis alt:     49.1 km
+    Inclination:       99.25°
+    Periapsis lat/lon: -75.10°  189.62°
+    Eccentricity:      3250213831565569.0000
+    RAAN:              151.86°
+
+  MISSION ΔV BUDGET
+    Departure burn:    3.908 km/s
+    Capture burn:      3.054 km/s
+    ─────────────────────────────────
+    Total:             6.962 km/s
+============================================================
