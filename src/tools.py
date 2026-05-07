@@ -551,6 +551,7 @@ def load_solar_system_kernels():
     '$SRCDIR/spice_solar_system/mars_iau2000_v1.tpc',
     '$SRCDIR/spice_solar_system/mar099s.bsp',
     '$SRCDIR/spice_solar_system/jup348.bsp',
+    '$SRCDIR/spice_solar_system/sat459.bsp',
     '$SRCDIR/spice_solar_system/54404085.bsp',
     '$SRCDIR/spice_solar_system/pck00011.tpc',
     '$SRCDIR/spice_solar_system/naif0012.tls'

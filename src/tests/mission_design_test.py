@@ -16,4 +16,4 @@ mission = MissionDesign(
 mission.solve()
 mission.report()
 print(mission.arrival)
-mission.plot(save_report=True, report_path="earth_jupiter_2030.png")
+mission.plot(save_report=True, report_path="reports/missions/earth_jupiter_2030.png")

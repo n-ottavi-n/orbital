@@ -61,7 +61,7 @@ bodies = {
     },
 
     'jupiter':{
-        'name':"jupiter barycenter",
+        'name':"jupiter",
         'mass':0,
         'mu':1.268e8,
         'radius':71492.0,
