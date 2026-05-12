@@ -7,6 +7,7 @@ from trajectory_utils import lambert_branches, hohmann_phase_angle
 from datetime import datetime
 import csv
 import time
+import pandas as pd_df
 
 AU = 1.495978707e8  # km per AU
 
@@ -591,31 +592,403 @@ class MGAscan:
             print("No candidates — run compute() first.")
             return
 
+        
+        df  = pd_df.DataFrame(self.candidates)
+        fig = self._build_scatter_figure(df)
+
+        if save_html:
+            fig.write_html(save_html)
+            print(f"Saved to {save_html}")
+
+        fig.show()
+        return fig
+    
+    def launch_dashboard(self):
+        """
+        Launch an interactive dashboard:
+        - left panel: MGA scatter plot
+        - right panel: heliocentric trajectory of clicked candidate
+        """
+        from dash import Dash, dcc, html, Input, Output, no_update
+        import plotly.graph_objects as go
         import pandas as pd_df
-        df = pd_df.DataFrame(self.candidates)
 
-        if df.empty:
-            print("No candidates to plot.")
-            return
+        app  = Dash(__name__)
+        df   = pd_df.DataFrame(self.candidates)
+
+        # build the scatter figure (reuse existing plot logic)
+        scatter_fig = self._build_scatter_figure(df)
+
+        app.layout = html.Div([
+
+            html.H2(
+                f"MGA Scan — {' → '.join(self.sequence)}",
+                style={'textAlign': 'center', 'fontFamily': 'Arial',
+                    'color': 'black'}
+            ),
+
+            html.Div([
+
+                # left: scatter plot
+                html.Div([
+                    dcc.Graph(
+                        id='scan-scatter',
+                        figure=scatter_fig,
+                        style={'height': '750px'},
+                        clear_on_unhover=True,
+                    )
+                ], style={'width': '48%', 'display': 'inline-block',
+                        'verticalAlign': 'top'}),
+
+                # right: candidate trajectory
+                html.Div([
+                    dcc.Graph(
+                        id='candidate-plot',
+                        figure=go.Figure(),   # empty until clicked
+                        style={'height': '750px'},
+                    )
+                ], style={'width': '50%', 'display': 'inline-block',
+                        'verticalAlign': 'top', 'marginLeft': '1%'}),
+
+            ]),
+
+            # info bar below
+            html.Div(
+                id='candidate-info',
+                style={'textAlign': 'center', 'fontFamily': 'Arial',
+                    'fontSize': '13px', 'color': '#333',
+                    'marginTop': '10px', 'padding': '8px',
+                    'backgroundColor': '#f5f5f5',
+                    'borderRadius': '4px'}
+            ),
+
+        ], style={'backgroundColor': 'white', 'padding': '20px'})
 
         # --------------------------------------------------
-        # prepare data
+        # callback: click on scatter → update trajectory plot
         # --------------------------------------------------
-        
-        df = df.sort_values("t_arrival_et").reset_index(drop=True)
+        @app.callback(
+            Output('candidate-plot', 'figure'),
+            Output('candidate-info', 'children'),
+            Input('scan-scatter', 'clickData'),
+        )
+        def update_trajectory(clickData):
+            if clickData is None:
+                return go.Figure(), "Click a candidate to see its trajectory."
 
-        
+            # recover candidate index from customdata
+            idx = clickData['points'][0].get('customdata')
+            if idx is None:
+                return no_update, no_update
+
+            c   = self.candidates[idx]
+            fig = self.plot_candidate(c, _return_only=True)
+
+            info = (
+                f"Candidate {idx}   |   "
+                f"Launch: {c['t_launch_utc']}   |   "
+                f"Flyby: {c['t_flyby_utc']}   |   "
+                f"Arrival: {c['t_arrival_utc']}   |   "
+                f"C3 = {c['c3_km2_s2']:.1f} km²/s²   |   "
+                f"v∞ target = {c['vinf_target_km_s']:.2f} km/s   |   "
+                f"TOF = {c['tof_total_days']:.0f} days"
+            )
+
+            return fig, info
+
+        print("Dashboard running at http://127.0.0.1:8050")
+        app.run(debug=False)
+    
+    def plot_candidate(self, candidate, save_html=None, n_points=500, _return_only=False):
+        """
+        Plot heliocentric trajectory for a single MGA candidate.
+
+        Parameters
+        ----------
+        candidate : int or dict
+            Index into self.candidates, or a dict/pandas Series
+            with the candidate data (e.g. a row from the CSV).
+        save_html : str, optional
+            Path to save interactive HTML.
+        n_points  : int
+            Number of points per trajectory leg.
+        """
+        import pandas as pd_df
+
+        if isinstance(candidate, int):
+            c = self.candidates[candidate]
+        elif hasattr(candidate, 'to_dict'):
+            c = candidate.to_dict()   # pandas Series
+        else:
+            c = candidate             # already a dict
+
+        mu  = self.mu_sun
+        AU  = 1.495978707e8
+
+        # --------------------------------------------------
+        # reconstruct departure state
+        # --------------------------------------------------
+        t_launch = float(c["t_launch_et"])
+        t_flyby  = float(c["t_flyby_et"])
+        t_arrival= float(c["t_arrival_et"])
+
+        # Earth state at launch
+        state_origin, _ = spice.spkezr(
+            self.origin, t_launch, "ECLIPJ2000", "NONE", "SUN"
+        )
+        r_launch = state_origin[:3]
+        v_origin = state_origin[3:]
+
+        # departure heliocentric velocity = v_planet + v∞_dep
+        v_inf_dep = np.array([
+            c["vinf_dep_vec_x"],
+            c["vinf_dep_vec_y"],
+            c["vinf_dep_vec_z"]
+        ])
+        v_launch = v_origin + v_inf_dep
+
+        # --------------------------------------------------
+        # reconstruct post-flyby state
+        # --------------------------------------------------
+        state_flyby_body, _ = spice.spkezr(
+            self.flyby_bodies[0], t_flyby, "ECLIPJ2000", "NONE", "SUN"
+        )
+        r_flyby      = state_flyby_body[:3]
+        v_flyby_body = state_flyby_body[3:]
+
+        v_inf_out = np.array([
+            c["vinf_out_vec_x"],
+            c["vinf_out_vec_y"],
+            c["vinf_out_vec_z"]
+        ])
+        v_postflyby = v_flyby_body + v_inf_out
+
+        # --------------------------------------------------
+        # propagate leg 1: launch → flyby
+        # --------------------------------------------------
+        tof_leg1  = t_flyby - t_launch
+        dt1       = tof_leg1 / n_points
+        leg1      = np.zeros((n_points + 1, 3))
+        leg1[0]   = r_launch
+        r, v      = r_launch.copy(), v_launch.copy()
+
+        for k in range(n_points):
+            r, v = self._keplerian_propagate(r, v, dt1)
+            leg1[k + 1] = r
+
+        # --------------------------------------------------
+        # propagate leg 2: flyby → arrival
+        # --------------------------------------------------
+        tof_leg2  = t_arrival - t_flyby
+        dt2       = tof_leg2 / n_points
+        leg2      = np.zeros((n_points + 1, 3))
+        leg2[0]   = r_flyby
+        r, v      = r_flyby.copy(), v_postflyby.copy()
+
+        for k in range(n_points):
+            r, v = self._keplerian_propagate(r, v, dt2)
+            leg2[k + 1] = r
+
+        # --------------------------------------------------
+        # planet positions over full mission duration
+        # --------------------------------------------------
+        times_full = np.linspace(t_launch, t_arrival,
+                                n_points * 2)
+
+        def get_body_track(body_name):
+            return np.array([
+                spice.spkpos(body_name, float(t),
+                            "ECLIPJ2000", "NONE", "SUN")[0]
+                for t in times_full
+            ]) / AU
+
+        origin_track  = get_body_track(self.origin)
+        flyby_track   = get_body_track(self.flyby_bodies[0])
+        target_track  = get_body_track(self.target)
+
+        # key positions
+        r_dep_planet = np.array(
+            spice.spkpos(self.origin, t_launch,
+                        "ECLIPJ2000", "NONE", "SUN")[0]
+        ) / AU
+
+        r_flyby_planet = np.array(
+            spice.spkpos(self.flyby_bodies[0], t_flyby,
+                        "ECLIPJ2000", "NONE", "SUN")[0]
+        ) / AU
+
+        r_arr_planet = np.array(
+            spice.spkpos(self.target, t_arrival,
+                        "ECLIPJ2000", "NONE", "SUN")[0]
+        ) / AU
+
+        # convert trajectories to AU
+        leg1_au = leg1 / AU
+        leg2_au = leg2 / AU
+
+        # --------------------------------------------------
+        # figure
+        # --------------------------------------------------
+        fig = go.Figure()
+
+        # Sun
+        fig.add_trace(go.Scatter3d(
+            x=[0], y=[0], z=[0],
+            mode='markers',
+            marker=dict(color='gold', size=8),
+            name='Sun',
+            hoverinfo='name',
+        ))
+
+        # planet tracks
+        for track, name, color in [
+            (origin_track,  self.origin.capitalize(),          'steelblue'),
+            (flyby_track,   self.flyby_bodies[0].capitalize(), 'tomato'),
+            (target_track,  self.target.capitalize(),          'sandybrown'),
+        ]:
+            fig.add_trace(go.Scatter3d(
+                x=track[:, 0], y=track[:, 1], z=track[:, 2],
+                mode='lines',
+                line=dict(color=color, width=1),
+                opacity=0.4,
+                name=f"{name} orbit",
+                hoverinfo='skip',
+            ))
+
+        # leg 1
+        fig.add_trace(go.Scatter3d(
+            x=leg1_au[:, 0], y=leg1_au[:, 1], z=leg1_au[:, 2],
+            mode='lines',
+            line=dict(color='royalblue', width=3),
+            name=f"Leg 1: {self.origin.capitalize()} → "
+                f"{self.flyby_bodies[0].capitalize()}",
+            hoverinfo='skip',
+        ))
+
+        # leg 2
+        fig.add_trace(go.Scatter3d(
+            x=leg2_au[:, 0], y=leg2_au[:, 1], z=leg2_au[:, 2],
+            mode='lines',
+            line=dict(color='darkorange', width=3),
+            name=f"Leg 2: {self.flyby_bodies[0].capitalize()} → "
+                f"{self.target.capitalize()}",
+            hoverinfo='skip',
+        ))
+
+        # departure point
+        fig.add_trace(go.Scatter3d(
+            x=[r_dep_planet[0]], y=[r_dep_planet[1]], z=[r_dep_planet[2]],
+            mode='markers',
+            marker=dict(color='steelblue', size=6, symbol='circle'),
+            name=f"Departure  {c['t_launch_utc']}",
+            hovertemplate=(
+                f"<b>Departure</b><br>"
+                f"{c['t_launch_utc']}<br>"
+                f"C3 = {c['c3_km2_s2']:.1f} km²/s²<br>"
+                f"v∞ = {c['vinf_dep_km_s']:.2f} km/s"
+                "<extra></extra>"
+            ),
+        ))
+
+        # flyby point
+        fig.add_trace(go.Scatter3d(
+            x=[r_flyby_planet[0]], y=[r_flyby_planet[1]], z=[r_flyby_planet[2]],
+            mode='markers',
+            marker=dict(color='tomato', size=6, symbol='diamond'),
+            name=f"Flyby  {c['t_flyby_utc']}",
+            hovertemplate=(
+                f"<b>{self.flyby_bodies[0].capitalize()} flyby</b><br>"
+                f"{c['t_flyby_utc']}<br>"
+                f"v∞ = {c['vinf_flyby_km_s']:.2f} km/s<br>"
+                f"alt = {c['flyby_alt_km']:.0f} km<br>"
+                f"turn = {c['turn_angle_deg']:.1f}°"
+                "<extra></extra>"
+            ),
+        ))
+
+        # arrival point
+        fig.add_trace(go.Scatter3d(
+            x=[r_arr_planet[0]], y=[r_arr_planet[1]], z=[r_arr_planet[2]],
+            mode='markers',
+            marker=dict(color='sandybrown', size=6, symbol='square'),
+            name=f"Arrival  {c['t_arrival_utc']}",
+            hovertemplate=(
+                f"<b>{self.target.capitalize()} arrival</b><br>"
+                f"{c['t_arrival_utc']}<br>"
+                f"v∞ = {c['vinf_target_km_s']:.2f} km/s<br>"
+                f"TOF = {c['tof_total_days']:.0f} days"
+                "<extra></extra>"
+            ),
+        ))
+
+        # --------------------------------------------------
+        # layout
+        # --------------------------------------------------
+        seq_str = " → ".join(self.sequence)
+
+        fig.update_layout(
+            title=dict(
+                text=(
+                    f"{seq_str} trajectory<br>"
+                    f"<sup>Launch: {c['t_launch_utc']}   "
+                    f"Flyby: {c['t_flyby_utc']}   "
+                    f"Arrival: {c['t_arrival_utc']}<br>"
+                    f"C3 = {c['c3_km2_s2']:.1f} km²/s²   "
+                    f"v∞ flyby = {c['vinf_flyby_km_s']:.2f} km/s   "
+                    f"v∞ target = {c['vinf_target_km_s']:.2f} km/s   "
+                    f"TOF = {c['tof_total_days']:.0f} days</sup>"
+                ),
+                font=dict(size=13, color='black'),
+                x=0.5,
+                xanchor='center',
+            ),
+            scene=dict(
+                xaxis=dict(title='x (AU)', backgroundcolor='white',
+                        gridcolor='lightgrey', showbackground=True),
+                yaxis=dict(title='y (AU)', backgroundcolor='white',
+                        gridcolor='lightgrey', showbackground=True),
+                zaxis=dict(title='z (AU)', backgroundcolor='white',
+                        gridcolor='lightgrey', showbackground=True),
+                bgcolor='white',
+                aspectmode='data',
+            ),
+            paper_bgcolor='white',
+            font=dict(color='black'),
+            width=1000,
+            height=800,
+            legend=dict(
+                x=0.01, y=0.99,
+                bordercolor='lightgrey',
+                borderwidth=1,
+                font=dict(color='black', size=9),
+            ),
+        )
+
+        if save_html:
+            fig.write_html(save_html)
+            print(f"Saved to {save_html}")
+        if not _return_only:
+            fig.show()
+        return fig
+    
+    def _build_scatter_figure(self, df):
+        """
+        Build the MGA scatter figure from a candidates dataframe.
+        Called by both plot() and launch_dashboard().
+        """
+        import pandas as pd_df
+
         launch_dates  = [et_to_datetime(t).strftime("%d %b %Y")
                         for t in df["t_launch_et"]]
         arrival_dates = [et_to_datetime(t).strftime("%d %b %Y")
                         for t in df["t_arrival_et"]]
 
-        # marker size inversely proportional to C3
         c3_vals  = df["c3_km2_s2"].values
         c3_norm  = (c3_vals - c3_vals.min()) / (c3_vals.max() - c3_vals.min() + 1e-10)
-        sizes    = 6 + (1 - c3_norm) * 14   # range 6-20px, larger = lower C3
+        sizes    = 6 + (1 - c3_norm) * 14
 
         hover = [
+            f"<b>Index:</b>    {idx}<br>"
             f"<b>Launch:</b>   {r['t_launch_utc']}<br>"
             f"<b>Flyby:</b>    {r['t_flyby_utc']}<br>"
             f"<b>Arrival:</b>  {r['t_arrival_utc']}<br>"
@@ -629,12 +1002,16 @@ class MGAscan:
             f"<b>Turn:</b>      {r['turn_angle_deg']:.1f}°<br>"
             f"<b>Flyby alt:</b> {r['flyby_alt_km']:.0f} km<br>"
             f"<b>SOI frac:</b>  {r['soi_fraction']:.3f}"
-            for _, r in df.iterrows()
+            for idx, (_, r) in enumerate(df.iterrows())
         ]
 
-        # --------------------------------------------------
-        # figure
-        # --------------------------------------------------
+        n_cand     = len(df)
+        c3_min_val = df["c3_km2_s2"].min()
+        c3_max_val = df["c3_km2_s2"].max()
+        v_min_val  = df["vinf_target_km_s"].min()
+        v_max_val  = df["vinf_target_km_s"].max()
+        seq_str    = " → ".join(self.sequence)
+
         fig = go.Figure()
 
         fig.add_trace(go.Scatter(
@@ -655,25 +1032,16 @@ class MGAscan:
                 showscale=True,
                 line=dict(width=0.5, color='white'),
             ),
+            customdata=list(range(len(df))),   # candidate index for click callback
             text=hover,
             hoverinfo='text',
             name='candidates',
         ))
 
-        # --------------------------------------------------
-        # layout
-        # --------------------------------------------------
-        seq_str    = " → ".join(self.sequence)
-        n_cand     = len(df)
-        c3_min_val = df["c3_km2_s2"].min()
-        c3_max_val = df["c3_km2_s2"].max()
-        v_min_val  = df["vinf_target_km_s"].min()
-        v_max_val  = df["vinf_target_km_s"].max()
-
         fig.update_layout(
             title=dict(
                 text=(
-                    f"MGA scan — {seq_str}<br>"
+                    f"MGA Scan — {seq_str}<br>"
                     f"<sup>{n_cand} candidates   "
                     f"C3: {c3_min_val:.1f}–{c3_max_val:.1f} km²/s²   "
                     f"v∞ target: {v_min_val:.2f}–{v_max_val:.2f} km/s   "
@@ -717,9 +1085,6 @@ class MGAscan:
             ),
         )
 
-        if save_html:
-            fig.write_html(save_html)
-            print(f"Saved to {save_html}")
-
-        fig.show()
         return fig
+
+
