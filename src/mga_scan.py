@@ -122,7 +122,7 @@ class MGAscan:
 
         phi_nom = hohmann_phase_angle(a1, a2, self.mu_sun)
         diff    = abs((phase - phi_nom + 180) % 360 - 180)
-        return diff <= 90   # wider tolerance than direct porkchop
+        return diff <= 120   
 
     # --------------------------------------------------
     def _keplerian_propagate(self, r0, v0, dt):
@@ -226,7 +226,7 @@ class MGAscan:
         return v_rot
 
     # --------------------------------------------------
-    def _check_target_soi(self, r_sc, v_sc, t_flyby):
+    def _check_target_soi(self, r_sc, v_sc, t_flyby, debug=False):
         """
         Analytically check if post-flyby orbit reaches target SOI.
         """
@@ -253,6 +253,13 @@ class MGAscan:
         p  = hmag**2 / mu
         rp = p / (1 + e)
         ra = p / (1 - e) if e < 1 else np.inf   # inf for hyperbola
+
+        if debug:
+            print(f"      post-flyby orbit: rp={rp/AU:.3f} AU  "
+                f"ra={ra/AU:.3f} AU  e={e:.3f}")
+            print(f"      Mercury a={a_target/AU:.3f} AU  "
+                f"SOI={r_soi/AU:.4f} AU")
+            print(f"      ra >= a_target-r_soi: {ra >= a_target - r_soi}")
 
         # does apoapsis reach target's orbit?
         if ra < a_target - r_soi:
@@ -370,13 +377,14 @@ class MGAscan:
         tested   = 0
         found    = 0
 
+
         for i, t_launch in enumerate(self.launches):
 
             # phase angle filter on Leg 1
-            if not self._phase_angle_filter(self.origin,
+            '''if not self._phase_angle_filter(self.origin,
                                             self.flyby_bodies[0],
                                             t_launch):
-                continue
+                continue'''
 
             for j, t_flyby in enumerate(self.flyby_grids[0]):
 
@@ -401,10 +409,12 @@ class MGAscan:
                 # ------------------------------------------
                 # Leg 1: Lambert origin → flyby body
                 # ------------------------------------------
-                try:
-                    start_str  = et_to_utc(t_launch)
-                    flyby_str  = et_to_utc(t_flyby)
+                
+                start_str  = et_to_utc(t_launch)
+                flyby_str  = et_to_utc(t_flyby)
 
+
+                try:
                     sim = lambert_interface(
                         self.origin, self.flyby_bodies[0],
                         start_str, flyby_str, flyby_str,
@@ -412,129 +422,143 @@ class MGAscan:
                     )
                     sim.solve()
 
-                    # departure v∞
-                    state_dep, _ = spice.spkezr(self.origin, t_launch,
-                                                "ECLIPJ2000", "NONE", "SUN")
-                    v_dep        = state_dep[3:]
-                    v_inf_dep    = sim.v0 - v_dep
-                    vinf_dep     = np.linalg.norm(v_inf_dep)
-                    c3           = vinf_dep**2
+                    sols = lambert_branches(
+                        sim.start_r, sim.end_r, sim.tof,
+                        mu=self.mu_sun
+                    )
 
-                    # check departure v∞ bounds
-                    vmin, vmax = self.vinf_bounds.get(self.origin, (0, np.inf))
-                    if not (vmin <= vinf_dep <= vmax):
-                        continue
+                    for sol in sols:
+                        v0       = sol[:3]
+                        v_arr    = sol[3:]
 
-                    # arrival v∞ at flyby body
-                    state_flyby, _ = spice.spkezr(self.flyby_bodies[0],
-                                                   t_flyby,
-                                                   "ECLIPJ2000", "NONE", "SUN")
-                    r_flyby_body   = state_flyby[:3]
-                    v_flyby_body   = state_flyby[3:]
-                    v_arr_leg1     = sim.v[3:]   # Lambert arrival velocity
-                    v_inf_in       = v_arr_leg1 - v_flyby_body
-                    vinf_flyby     = np.linalg.norm(v_inf_in)
-
-                    # check flyby v∞ bounds
-                    flyby_body = self.flyby_bodies[0]
-                    vmin, vmax = self.vinf_bounds.get(flyby_body, (0, np.inf))
-                    if not (vmin <= vinf_flyby <= vmax):
-                        continue
-
-                except Exception:
-                    continue
-
-                # ------------------------------------------
-                # turning angle sweep at flyby body
-                # ------------------------------------------
-                body_radius = self.body_data[flyby_body]['radius']
-                mu_flyby    = self.body_data[flyby_body]['mu']
-                min_alt     = self.min_flyby_alt_km.get(flyby_body, 300)
-                r_min       = body_radius + min_alt
-
-                # spacecraft heliocentric state at flyby
-                r_sc_flyby = sim.end_r   # position at flyby (from Lambert)
-
-                for r_mult in self.periapsis_radii:
-
-                    r_peri = max(r_mult * body_radius, r_min)
-
-                    # maximum turn angle at this periapsis
-                    sin_half = mu_flyby / (mu_flyby + r_peri * vinf_flyby**2)
-                    if sin_half > 1:
-                        continue
-                    turn_max = 2 * np.arcsin(sin_half)
-
-                    # both prograde and retrograde turns
-                    for sign in [+1, -1]:
-                        turn_angle = sign * turn_max
+                        # departure v∞
+                        state_dep, _ = spice.spkezr(self.origin, t_launch,
+                                                    "ECLIPJ2000", "NONE", "SUN")
+                        v_dep        = state_dep[3:]
+                        v_inf_dep    = v0 - v_dep
+                        vinf_dep     = np.linalg.norm(v_inf_dep)
+                        c3           = vinf_dep**2
 
 
-                        # rotate v∞_in to get v∞_out
-                        v_inf_out = self._rotate_vinf(v_inf_in, turn_angle)
-
-                        # heliocentric departure velocity after flyby
-                        v_sc_out  = v_flyby_body + v_inf_out
-
-                        # ------------------------------------------
-                        # propagate Leg 2 and check target SOI
-                        # ------------------------------------------
-                        result = self._check_target_soi(
-                            r_sc_flyby, v_sc_out, t_flyby
-                        )
-
-                        if result is None:
+                        # check departure v∞ bounds
+                        vmin, vmax = self.vinf_bounds.get(self.origin, (0, np.inf))
+                        if not (vmin <= vinf_dep <= vmax):
                             continue
 
-                        found += 1
+                        # arrival v∞ at flyby body
+                        state_flyby, _ = spice.spkezr(self.flyby_bodies[0],
+                                                    t_flyby,
+                                                    "ECLIPJ2000", "NONE", "SUN")
+                        #r_flyby_body   = state_flyby[:3]
+                        v_flyby_body   = state_flyby[3:]
+                        #v_arr_leg1     = sim.v[3:]   # Lambert arrival velocity
+                        v_inf_in       = v_arr - v_flyby_body
+                        vinf_flyby     = np.linalg.norm(v_inf_in)
 
-                        candidate = {
-                            # sequence
-                            "sequence":            " → ".join(self.sequence),
 
-                            # departure
-                            "t_launch_et":         t_launch,
-                            "t_launch_utc":        et_to_utc(t_launch),
-                            "vinf_dep_km_s":       vinf_dep,
-                            "c3_km2_s2":           c3,
-                            "vinf_dep_vec_x":      v_inf_dep[0],
-                            "vinf_dep_vec_y":      v_inf_dep[1],
-                            "vinf_dep_vec_z":      v_inf_dep[2],
+                        # check flyby v∞ bounds
+                        flyby_body = self.flyby_bodies[0]
+                        vmin, vmax = self.vinf_bounds.get(flyby_body, (0, np.inf))
+                        if not (vmin <= vinf_flyby <= vmax):
+                            continue
 
-                            # flyby
-                            "flyby_body":          flyby_body,
-                            "t_flyby_et":          t_flyby,
-                            "t_flyby_utc":         et_to_utc(t_flyby),
-                            "tof_leg1_days":       tof_leg1,
-                            "vinf_flyby_km_s":     vinf_flyby,
-                            "flyby_periapsis_km":  r_peri,
-                            "flyby_alt_km":        r_peri - body_radius,
-                            "turn_angle_deg":      np.degrees(turn_angle),
-                            "vinf_in_vec_x":       v_inf_in[0],
-                            "vinf_in_vec_y":       v_inf_in[1],
-                            "vinf_in_vec_z":       v_inf_in[2],
-                            "vinf_out_vec_x":      v_inf_out[0],
-                            "vinf_out_vec_y":      v_inf_out[1],
-                            "vinf_out_vec_z":      v_inf_out[2],
+                        # ------------------------------------------
+                        # turning angle sweep at flyby body
+                        # ------------------------------------------
+                        body_radius = self.body_data[flyby_body]['radius']
+                        mu_flyby    = self.body_data[flyby_body]['mu']
+                        min_alt     = self.min_flyby_alt_km.get(flyby_body, 300)
+                        r_min       = body_radius + min_alt
 
-                            # arrival
-                            "target_body":         self.target,
-                            "t_arrival_et":        result["t_closest"],
-                            "t_arrival_utc":       et_to_utc(result["t_closest"]),
-                            "tof_leg2_days":       (result["t_closest"] - t_flyby) / 86400,
-                            "tof_total_days":      (result["t_closest"] - t_launch) / 86400,
-                            "vinf_target_km_s":    result["vinf_target_km_s"],
-                            "min_range_km":        result["min_range_km"],
-                            "soi_fraction":        result["soi_fraction"],
-                            "vinf_target_vec_x":   result["vinf_target_vec"][0],
-                            "vinf_target_vec_y":   result["vinf_target_vec"][1],
-                            "vinf_target_vec_z":   result["vinf_target_vec"][2],
-                        }
+                        # spacecraft heliocentric state at flyby
+                        r_sc_flyby = sim.end_r   # position at flyby (from Lambert)
 
-                        self.candidates.append(candidate)
+                        
 
-                        if writer:
-                            writer.writerow(candidate)
+                        for r_mult in self.periapsis_radii:
+
+                            r_peri = max(r_mult * body_radius, r_min)
+
+                            # maximum turn angle at this periapsis
+                            sin_half = mu_flyby / (mu_flyby + r_peri * vinf_flyby**2)
+                            if sin_half > 1:
+                                continue
+                            turn_max = 2 * np.arcsin(sin_half)
+
+                            # both prograde and retrograde turns
+                            for sign in [+1, -1]:
+                                turn_angle = sign * turn_max
+
+
+                                # rotate v∞_in to get v∞_out
+                                v_inf_out = self._rotate_vinf(v_inf_in, turn_angle)
+
+                                # heliocentric departure velocity after flyby
+                                v_sc_out  = v_flyby_body + v_inf_out
+
+                                # ------------------------------------------
+                                # propagate Leg 2 and check target SOI
+                                # ------------------------------------------
+                                result = self._check_target_soi(
+                                    r_sc_flyby, v_sc_out, t_flyby
+                                )
+
+                                if result is None:
+                                    continue
+
+                                found += 1
+
+                                candidate = {
+                                    # sequence
+                                    "sequence":            " → ".join(self.sequence),
+                                
+
+                                    # departure
+                                    "t_launch_et":         t_launch,
+                                    "t_launch_utc":        et_to_utc(t_launch),
+                                    "vinf_dep_km_s":       vinf_dep,
+                                    "c3_km2_s2":           c3,
+                                    "vinf_dep_vec_x":      v_inf_dep[0],
+                                    "vinf_dep_vec_y":      v_inf_dep[1],
+                                    "vinf_dep_vec_z":      v_inf_dep[2],
+
+                                    # flyby
+                                    "flyby_body":          flyby_body,
+                                    "t_flyby_et":          t_flyby,
+                                    "t_flyby_utc":         et_to_utc(t_flyby),
+                                    "tof_leg1_days":       tof_leg1,
+                                    "vinf_flyby_km_s":     vinf_flyby,
+                                    "flyby_periapsis_km":  r_peri,
+                                    "flyby_alt_km":        r_peri - body_radius,
+                                    "turn_angle_deg":      np.degrees(turn_angle),
+                                    "vinf_in_vec_x":       v_inf_in[0],
+                                    "vinf_in_vec_y":       v_inf_in[1],
+                                    "vinf_in_vec_z":       v_inf_in[2],
+                                    "vinf_out_vec_x":      v_inf_out[0],
+                                    "vinf_out_vec_y":      v_inf_out[1],
+                                    "vinf_out_vec_z":      v_inf_out[2],
+
+                                    # arrival
+                                    "target_body":         self.target,
+                                    "t_arrival_et":        result["t_closest"],
+                                    "t_arrival_utc":       et_to_utc(result["t_closest"]),
+                                    "tof_leg2_days":       (result["t_closest"] - t_flyby) / 86400,
+                                    "tof_total_days":      (result["t_closest"] - t_launch) / 86400,
+                                    "vinf_target_km_s":    result["vinf_target_km_s"],
+                                    "min_range_km":        result["min_range_km"],
+                                    "soi_fraction":        result["soi_fraction"],
+                                    "vinf_target_vec_x":   result["vinf_target_vec"][0],
+                                    "vinf_target_vec_y":   result["vinf_target_vec"][1],
+                                    "vinf_target_vec_z":   result["vinf_target_vec"][2],
+                                }
+
+                                self.candidates.append(candidate)
+
+                                if writer:
+                                    writer.writerow(candidate)
+
+                except Exception:                        
+                    continue
 
                 if tested % 100 == 0:
                     print(f"  {tested}/{total} tested, {found} candidates found")

@@ -40,7 +40,7 @@ class lambert_interface:
         self.bodies=[origin,dest]
 
 
-    def solve(self):
+    def solve(self, prograde=True):
         props = []
         #get states of other bodies to plot e.g. perturbating bodies
         for body in self.bodies:
@@ -55,7 +55,7 @@ class lambert_interface:
         self.end_r, _ = spice.spkpos(self.dest, self.arrival_et, 'ECLIPJ2000', 'NONE', self.obs)
 
         #self.v=lambert_uv(self.start_r,self.end_r,self.tof, 0.8, 4*math.pi**2,-4*math.pi**2)
-        self.v=lambert_universal(self.start_r,self.end_r,self.tof, self.mu)
+        self.v=lambert_universal(self.start_r,self.end_r,self.tof, self.mu, prograde=prograde)
         self.v0 = self.v[:3]
 
     def propagate(self,show=False, animate=False):
