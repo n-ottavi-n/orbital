@@ -6,3 +6,4 @@ src/spice_solar_system/mar099s.bsp
 src/spice_solar_system/mars_iau2000_v1.tpc
 src/spice_solar_system/sat459.bsp
 src/apps/earth_app.py
+venv/

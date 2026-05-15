@@ -1,6 +1,6 @@
 
     \begindata
-    PATH_VALUES = ('C:\Users\Responsable Info LLB\Documents\Projects\orbital\orbital')
+    PATH_VALUES = ('E:\orbital')
     PATH_SYMBOLS = ('SRCDIR')
 
     KERNELS_TO_LOAD=(
