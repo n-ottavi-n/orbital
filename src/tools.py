@@ -50,9 +50,9 @@ def plot_3d(rs, cb, show_plot=False, save_plot=False, au_units=False):
     ax.plot(zeros, zeros, line, color='black', alpha=0.75)
 
     # plot trajectory
-    ax.plot(rs[:, 0], rs[:, 1], rs[:, 2], 'g', label='trajectory', zorder=4)
-    ax.plot([rs[0, 0]], [rs[0, 1]], [rs[0, 2]], 'wo', label='initial position', zorder=5)
-    ax.plot([rs[-1, 0]], [rs[-1, 1]], [rs[-1, 2]], 'yo', label='final position', zorder=6)
+    ax.plot(rs[:, 0], rs[:, 1], rs[:, 2], 'g', label='trajectory', zorder=4, linewidth=0.25)
+    ax.plot([rs[0, 0]], [rs[0, 1]], [rs[0, 2]], 'wo', label='initial position', zorder=5, linewidth=0.25)
+    ax.plot([rs[-1, 0]], [rs[-1, 1]], [rs[-1, 2]], 'yo', label='final position', zorder=6, linewidth=0.25)
 
     # plot x y z vectors
     l = radius * 2
@@ -120,9 +120,9 @@ def plot_n_orbits(rs, step_t, labels, cb, show_plot=False, save_plot=False, au_u
     # plot trajectory
     n=0
     for r in rs:
-        ax.plot(r[:, 0], r[:, 1], r[:, 2],  label=labels[n], zorder=4)
-        ax.plot([r[0, 0]], [r[0, 1]], [r[0, 2]],'wo', zorder=5)
-        ax.plot([r[-1, 0]], [r[-1, 1]], [r[-1, 2]], 'yo', zorder=6)
+        ax.plot(r[:, 0], r[:, 1], r[:, 2],  label=labels[n], zorder=4, linewidth=0.5)
+        ax.plot([r[0, 0]], [r[0, 1]], [r[0, 2]],'wo', zorder=5, linewidth=0.5)
+        ax.plot([r[-1, 0]], [r[-1, 1]], [r[-1, 2]], 'yo', zorder=6, linewidth=0.5)
         n+=1
 
     max_val = np.max(np.abs(rs))
@@ -307,9 +307,9 @@ def plot_n_orbits_animate(rs, step_t, labels, cb, show_plot=False, save=False, a
     ax.plot(zeros, zeros, line, color='black', alpha=0.75)
 
     def update(num, data, line2_lst, current_poses):
-        hr = (step_t * num) // 3600
+        day = (step_t * num) // (3600*24)
         for i in range(len(data)):
-            ax.set_title("time: {} hrs".format(hr))
+            ax.set_title("time: {} days".format(day))
             line2_lst[i].set_data(data[i][:num, 0], data[i][:num, 1])
             line2_lst[i].set_3d_properties(data[i][:num, 2])
             current_poses[i].set_data([data[i][num, 0]], [data[i][num, 1]])
@@ -551,6 +551,7 @@ def load_solar_system_kernels():
     '$SRCDIR/spice_solar_system/mars_iau2000_v1.tpc',
     '$SRCDIR/spice_solar_system/mar099s.bsp',
     '$SRCDIR/spice_solar_system/jup348.bsp',
+    '$SRCDIR/spice_solar_system/jup365.bsp',
     '$SRCDIR/spice_solar_system/sat459.bsp',
     '$SRCDIR/spice_solar_system/54404085.bsp',
     '$SRCDIR/spice_solar_system/pck00011.tpc',

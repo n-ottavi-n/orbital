@@ -6,6 +6,10 @@ from mpl_toolkits.mplot3d import Axes3D
 from Propagator import Propagator
 import tools as t
 from math import sqrt
+from tools import load_solar_system_kernels
+
+
+load_solar_system_kernels()
 
 
 cb=planetary_data.earth
@@ -39,8 +43,8 @@ tspan=3600*24*n_days
 dt=100
 
 #propagation
-prop0=Propagator(state00,tspan, dt, cb=cb)
-prop1=Propagator(state01,tspan, dt, cb=cb)
+prop0=Propagator(state00,tspan, cb=cb)
+prop1=Propagator(state01,tspan, cb=cb)
 
 
 prop0.propagate()

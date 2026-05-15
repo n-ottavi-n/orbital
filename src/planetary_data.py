@@ -68,12 +68,100 @@ bodies = {
         'j2':0.01475
     },
 
+    'io':{
+        'name':"io",
+        'mass':0,
+        'mu':5559.91,
+        'radius':1821.6,
+        'j2':0.0004
+    },
+
+    'europa':{
+        'name':"europa",
+        'mass':0,
+        'mu':3202.739,
+        'radius':1560.8,
+        'j2':0.0001
+    },
+
+    'ganymede':{
+        'name':"ganymede",
+        'mass':0,
+        'mu':9887.834,
+        'radius':2634.1,
+        'j2':0.00015
+    },
+
+    'callisto':{
+        'name':"callisto",
+        'mass':0,
+        'mu':7179.289,
+        'radius':2410.3,
+        'j2':0.00005
+    },
+
     'saturn':{
         'name':"saturn",
         'mass':0,
         'mu':3.794e7,
         'radius':60268.0,
         'j2':0.01645
+    },
+
+    'mimas':{
+        'name':"mimas",
+        'mass':0,
+        'mu':2.5035,
+        'radius':198.2,
+        'j2':0
+    },
+
+    'enceladus':{
+        'name':"enceladus",
+        'mass':0,
+        'mu':7.2101,
+        'radius':252.1,
+        'j2':0
+    },
+
+    'tethys':{
+        'name':"tethys",
+        'mass':0,
+        'mu':41.2135,
+        'radius':531.1,
+        'j2':0
+    },
+
+    'dione':{
+        'name':"dione",
+        'mass':0,
+        'mu':73.116,
+        'radius':561.4,
+        'j2':0
+    },
+
+    'rhea':{
+        'name':"rhea",
+        'mass':0,
+        'mu':153.937,
+        'radius':763.8,
+        'j2':0
+    },
+
+    'titan':{
+        'name':"titan",
+        'mass':0,
+        'mu':8978.1,
+        'radius':2574.7,
+        'j2':0.0004
+    },
+
+    'iapetus':{
+        'name':"iapetus",
+        'mass':0,
+        'mu':120.515,
+        'radius':734.5,
+        'j2':0
     },
 
     '54404085':{
@@ -119,5 +207,16 @@ earth = bodies['earth']
 mars  = bodies['mars']
 moon  = bodies.get('moon')
 jupiter   = bodies['jupiter']
+io = bodies['io']
+europa = bodies['europa']   
+ganymede = bodies['ganymede']
+callisto = bodies['callisto']
 saturn   = bodies['saturn']
+mimas = bodies['mimas']
+enceladus = bodies['enceladus']
+tethys = bodies['tethys']
+dione = bodies['dione']
+rhea = bodies['rhea']
+titan = bodies['titan']
+iapetus = bodies['iapetus']
 ceres   = bodies['ceres']

@@ -47,29 +47,27 @@ class Propagator:
             self.vectors_from_sun, lightTimes =spice.spkpos(self.cb['name'], self.times, 'J2000', 'NONE', "SUN")
             self.srp=True
 
-        self.pert_bodies = True
+        
         self.bodies=[]
         #check if list of perturbing bodies is present then store it.
         for pert in perts:
-            if type(pert) is list:
-                self.pert_bodies=True
-                self.bodies=pert # list of pd objects
+            if type(pert) is list: 
+                self.pert_bodies=True 
+                self.bodies=pert # list of pd objects  if type is list then it is a list of perturbing bodies, else it is a perturbation type like j2 or srp
 
         self.body_names=[]
         self.r_cb2nb_lst=[]
 
-        if self.bodies:
-            for body in self.bodies:
+        if self.bodies: 
+            for body in self.bodies: #get vector from central body to perturbing body for each perturbing body and store it for later use in acceleration calculation
                 self.body_names.append(body['name']) #for future debugging
-                r_cb2nb, lightTimes = spice.spkpos(body['name'], self.times, 'J2000', 'NONE', cb['name'])
+                r_cb2nb, lightTimes = spice.spkpos(body['name'], self.times, 'J2000', 'NONE', cb['name']) #vector from central body to perturbing body
                 self.r_cb2nb_lst.append(r_cb2nb)
 
         self.sc_data=spacecraft_data
 
 
     def propagate(self):
-        #print("propagating...")
-        #self.n_steps=int(np.ceil((self.tspan/self.dt)))
 
         self.ts = np.zeros((self.n_steps,1))
         self.ys = np.zeros((self.n_steps,6))
@@ -124,12 +122,14 @@ class Propagator:
             a+=acc*d
             #source: https://ntrs.nasa.gov/api/citations/20080012725/downloads/20080012725.pdf
 
+        self.pert_bodies=True
+
 
         if self.pert_bodies:
             for i in range(len(self.bodies)):
-                mu=self.bodies[i]['mu']
-                r_sat2body = self.r_cb2nb_lst[i][self.steps, :] - r
-                a += mu * ((r_sat2body / (np.linalg.norm(r_sat2body) ** 3)) - (self.r_cb2nb_lst[i][self.steps, :] / (np.linalg.norm(self.r_cb2nb_lst[i][self.steps, :]) ** 3)))
+                mu=self.bodies[i]['mu']  #gravitational parameter of perturbing body
+                r_sat2body = self.r_cb2nb_lst[i][self.steps, :] - r #vector from satellite to perturbing body
+                a += mu * ((r_sat2body / (np.linalg.norm(r_sat2body) ** 3)) - (self.r_cb2nb_lst[i][self.steps, :] / (np.linalg.norm(self.r_cb2nb_lst[i][self.steps, :]) ** 3))) #Cowell's method
 
         return [vx, vy, vz, a[0], a[1], a[2]]
 
