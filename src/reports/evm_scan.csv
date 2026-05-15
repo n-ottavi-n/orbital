@@ -1,0 +1,9 @@
+# MGA SCAN
+# Sequence: EARTH → VENUS → MARS
+# v∞ bounds: {'EARTH': (0, 15), 'VENUS': (3, 20), 'MARS': (0, 100)}
+# Periapsis radii: [1.05, 1.1, 1.2, 1.3, 1.4, 1.5, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20, 30]
+# Min flyby alt: {'VENUS': 200}
+# Grid resolution: 7 days
+# Propagation: 3000 days
+#
+sequence,t_launch_et,t_launch_utc,vinf_dep_km_s,c3_km2_s2,vinf_dep_vec_x,vinf_dep_vec_y,vinf_dep_vec_z,flyby_body,t_flyby_et,t_flyby_utc,tof_leg1_days,vinf_flyby_km_s,flyby_periapsis_km,flyby_alt_km,turn_angle_deg,vinf_in_vec_x,vinf_in_vec_y,vinf_in_vec_z,vinf_out_vec_x,vinf_out_vec_y,vinf_out_vec_z,target_body,t_arrival_et,t_arrival_utc,tof_leg2_days,tof_total_days,vinf_target_km_s,min_range_km,soi_fraction,vinf_target_vec_x,vinf_target_vec_y,vinf_target_vec_z

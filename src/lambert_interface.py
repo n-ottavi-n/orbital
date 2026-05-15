@@ -1,16 +1,9 @@
-import math
 import planetary_data as pd
 from lambert_tools import lambert_uv, lambert_universal
 import spiceypy as spice
 import numpy as np
 from interplanetary_interface import interplanetary_interface
-'''
-start_date='Jul 30, 2020, 00:00 UTC'
-arrival_date='Feb 18, 2021, 00:00 UTC'
-end_date='Jul 30, 2022, 00:00 UTC'
 
-steps=10000
-'''
 
 class lambert_interface:
     def __init__(self,origin, dest, start_date,arrival_date,end_date,steps, perturbations, mu=pd.sun['mu'], arrival_et_offset=0.0):
@@ -47,7 +40,7 @@ class lambert_interface:
         self.bodies=[origin,dest]
 
 
-    def solve(self):
+    def solve(self, prograde=True):
         props = []
         #get states of other bodies to plot e.g. perturbating bodies
         for body in self.bodies:
@@ -56,13 +49,13 @@ class lambert_interface:
             props.append(positions)
         self.props=props
 
-        position_tgt, lightTimes = spice.spkpos(self.dest, self.etArr, 'ECLIPJ2000', 'NONE', self.obs)
+        #position_tgt, lightTimes = spice.spkpos(self.dest, self.etArr, 'ECLIPJ2000', 'NONE', self.obs)
 
         self.start_r, _ = spice.spkpos(self.origin, self.start_et, 'ECLIPJ2000', 'NONE', self.obs)
         self.end_r, _ = spice.spkpos(self.dest, self.arrival_et, 'ECLIPJ2000', 'NONE', self.obs)
 
         #self.v=lambert_uv(self.start_r,self.end_r,self.tof, 0.8, 4*math.pi**2,-4*math.pi**2)
-        self.v=lambert_universal(self.start_r,self.end_r,self.tof, self.mu)
+        self.v=lambert_universal(self.start_r,self.end_r,self.tof, self.mu, prograde=prograde)
         self.v0 = self.v[:3]
 
     def propagate(self,show=False, animate=False):
