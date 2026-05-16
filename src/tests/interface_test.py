@@ -16,8 +16,13 @@ cb=planetary_data.earth
 
 t.load_solar_system_kernels()
 
-sv, _lighttimes=spice.spkezr("EUROPA", spice.str2et('Jan 01, 2024, 00:00 UTC'), 'J2000', 'NONE', "JUPITER")
-elems=spice.oscelt(sv, spice.str2et('Jan 01, 2024, 00:00 UTC'), planetary_data.jupiter['mu'])
+t0='Jan 03, 2024, 11:20 UTC'
+tf='Jan 01, 2029, 00:00 UTC'
+
+t0_et = spice.str2et(t0)
+sv, _lighttimes=spice.spkezr("EUROPA", t0_et, 'J2000', 'NONE', "JUPITER")
+elems=spice.oscelt(sv, t0_et, planetary_data.jupiter['mu'])
+
 print("perifocal distance: ", elems[0])
 print("eccentricity: ", elems[1])
 print("inclination: ", elems[2]*spice.dpr())
@@ -25,11 +30,13 @@ print("longitude of ascending node: ", elems[3]*spice.dpr())
 print("argument of periapsis: ", elems[4]*spice.dpr())
 print("mean anomaly: ", elems[5]*spice.dpr())
 
-sats=[['europa_probe', 1664000, 0.6, 25.426, 130, 225.071, 357.011]]
+res_orbit = t.get_resonant_orbit("EUROPA", [1, 5], t0, planetary_data.jupiter)
+print("resonant orbit: ", res_orbit)
 
-bodies=['europa', 'io', 'ganymede', 'callisto']
-t0='Jan 01, 2024, 00:00 UTC'
-tf='Jan 01, 2025, 00:00 UTC'
+sats=[['europa_probe', res_orbit[0], res_orbit[1], res_orbit[2], 0.5, res_orbit[4], res_orbit[5]]]
+
+bodies=['europa']
+
 cb=planetary_data.jupiter
 perturbations=[[planetary_data.io, planetary_data.europa, planetary_data.ganymede, planetary_data.callisto]] # perturbations can be given as strings of body names or as planetary_data objects in a list, for example: ['j2', [pd.mars, pd.venus], 'srp'] or ['j2', 'mars', 'venus', 'srp'] both are valid
 sc_data={
@@ -38,4 +45,4 @@ sc_data={
     'area':12 #m²
 }
 
-plot_orbits(sats, bodies, t0, tf, perturbations, central_body=cb, sc_data=sc_data, steps=50000, from_file=False, animate=True, show=True, frame_step=50)
+plot_orbits(sats, bodies, t0, tf, perturbations, central_body=cb, sc_data=sc_data, steps=100000, from_file=False, animate=False, show=True, frame_step=50, plot_coes=False)

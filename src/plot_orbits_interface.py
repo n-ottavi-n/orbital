@@ -5,7 +5,7 @@ import planetary_data as pd
 import spiceypy as spice
 
 
-def plot_orbits(satellites, bodies, start_date, end_date, perturbations,central_body=pd.earth, sc_data={}, steps=400, from_file=True, animate=False, show=False, save=False, save_file='matplot003.gif', frame_step=10):
+def plot_orbits(satellites, bodies, start_date, end_date, perturbations,central_body=pd.earth, sc_data={}, steps=400, from_file=True, animate=False, show=False, save=False, save_file='matplot003.gif', frame_step=10, plot_coes=False):
     '''
     An interface for plotting 3d orbits of any number of satellites and other bodies if they have a name and their tle is in a file in the /venv/data folder,
     plots can be animated and saved
@@ -53,6 +53,9 @@ def plot_orbits(satellites, bodies, start_date, end_date, perturbations,central_
         times = prop.times
         prop.propagate()
         props.append(prop.rs)
+        if plot_coes:
+            prop.calculate_coes()
+            prop.plot_coes(days=True)
 
     #print(props)
 

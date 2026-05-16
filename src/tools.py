@@ -11,6 +11,41 @@ import os
 import pandas as pd
 import spiceypy as spice
 
+def get_resonant_orbit(body, resonance_ratio, t0, cb=planetary_data.earth):
+    '''
+    returns the coes of a resonant orbit with a given body and resonance ratio
+    @param body: spice body string
+    @param resonance_ratio: list of two integers [p, q] where p is the number of orbits of the satellite and q is the number of orbits of the body in the same time period
+    @param t0: epoch of date in string format 'Sep 17, 2023, 00:00 UTC'
+    @param cb: central body, spice body string
+    @return: coes of the resonant orbit
+    '''
+    mu = cb['mu']
+    # get the orbital period of the body
+    t0_et = spice.str2et(t0)
+    sv, _lighttimes = spice.spkezr(body, t0_et, 'J2000', 'NONE', cb['name'])
+    elems=spice.oscelt(sv, t0_et, mu)
+    rp, e, i, raan, argp, m0 = elems[0:6]
+    mu = elems[-1]
+    ra = rp * (1 + e) / (1 - e) # apoapsis distance
+    a = (rp + ra) / 2 # semi-major axis
+    body_period = 2 * math.pi * math.sqrt((a**3) / mu)
+    # calculate the orbital period of the satellite using the resonance ratio
+    satellite_period = body_period * (resonance_ratio[1] / resonance_ratio[0])
+    # calculate the semi-major axis of the satellite using Kepler's third law
+    satellite_a = ((mu * (satellite_period**2)) / (4 * (math.pi**2)))**(1/3)
+    satellite_rp = rp
+    satellite_ra = 2 * satellite_a - satellite_rp
+    satellite_e = (satellite_ra - satellite_rp) / (satellite_ra + satellite_rp)
+    satellite_i = i*spice.dpr()
+    satellite_raan = raan*spice.dpr()
+    satellite_argp = argp*spice.dpr()
+    satellite_m0 = 0
+    sat_period = 2 * math.pi * math.sqrt((satellite_a**3) / mu)
+    print("period ratio:", sat_period/body_period)
+    return [satellite_a, satellite_e, satellite_i, satellite_m0, satellite_argp, satellite_raan]
+    # return the coes of the resonant orbit
+
 def plot_3d(rs, cb, show_plot=False, save_plot=False, au_units=False):
     fig = plt.figure(figsize=(10, 10))
     ax = fig.add_subplot(111, projection='3d')
@@ -152,12 +187,12 @@ def plot_n_orbits(rs, step_t, labels, cb, show_plot=False, save_plot=False, au_u
 
 def coes2rv(coes, deg=False, mu=planetary_data.earth['mu']):
     a, e, i, m, aop, raan = coes
-    E = ecc_anom(m, e)  # eccentric anomaly
     if deg:
         i    = np.radians(i)
         m    = np.radians(m)
         aop  = np.radians(aop)
         raan = np.radians(raan)
+    E = ecc_anom(m, e)  # eccentric anomaly
     beta   = e / (1 + np.sqrt(1 - e**2))
     nu     = E + 2 * np.arctan((beta * np.sin(E)) / (1 - beta * np.cos(E)))  # true anomaly
     radius = a * (1 - e * np.cos(E))

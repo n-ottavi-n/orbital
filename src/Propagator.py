@@ -137,7 +137,7 @@ class Propagator:
         print("calculating...")
         coes=[]
         for time in range(len(self.rs)):
-            coes.append(t.rv2coes(self.rs[time],self.vs[time], deg=True))
+            coes.append(t.rv2coes(self.rs[time],self.vs[time], deg=True, mu=self.cb['mu']))
         self.coes=np.array(coes)
 
     def plot_coes(self, hours=False, days=False):
