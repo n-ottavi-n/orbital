@@ -10,6 +10,8 @@ from datetime import datetime
 import os
 import pandas as pd
 import spiceypy as spice
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 def get_resonant_orbit(body, resonance_ratio, t0, cb=planetary_data.earth):
     '''
@@ -45,6 +47,261 @@ def get_resonant_orbit(body, resonance_ratio, t0, cb=planetary_data.earth):
     print("period ratio:", sat_period/body_period)
     return [satellite_a, satellite_e, satellite_i, satellite_m0, satellite_argp, satellite_raan]
     # return the coes of the resonant orbit
+
+
+
+def plot_2d(props, labels, central_body, times=None,
+                   save_html=None, title=None):
+    """
+    Plot 2D projected views of orbital trajectories.
+
+    Parameters
+    ----------
+    props        : np.ndarray of shape (N_objects, N_steps, 3)
+                   positions in central body equatorial frame (km)
+    labels       : list of N_objects strings
+    central_body : planetary_data dict
+    times        : list of ET epochs (optional, for hover)
+    save_html    : path to save HTML (optional)
+    title        : plot title (optional)
+    """
+
+    body_name   = central_body['name'].capitalize()
+    body_radius = central_body['radius']
+
+    # --------------------------------------------------
+    # colors — one per object
+    # --------------------------------------------------
+    colors = [
+        '#4363d8', '#e6194b', '#3cb44b', '#f58231',
+        '#911eb4', '#42d4f4', '#f032e6', '#bfef45',
+        '#fabed4', '#469990', '#dcbeff', '#9a6324',
+    ]
+
+    # --------------------------------------------------
+    # figure — two panels side by side
+    # polar view (x-y) | equatorial view (x-z)
+    # --------------------------------------------------
+    fig = make_subplots(
+        rows=1, cols=2,
+        subplot_titles=(
+            f"Polar view  (x-y plane, looking down +z)",   # CHANGED
+            f"Equatorial view  (x-z plane, looking down +y)"
+        ),
+        horizontal_spacing=0.08,
+    )
+
+    # --------------------------------------------------
+    # central body circles in both panels
+    # --------------------------------------------------
+    theta = np.linspace(0, 2 * np.pi, 200)
+    bx    = body_radius * np.cos(theta)
+    by    = body_radius * np.sin(theta)
+
+    # polar view — body circle in x-y plane
+    fig.add_trace(go.Scatter(
+        x=bx, y=by,
+        mode='lines',
+        line=dict(color='steelblue', width=2),
+        fill='toself',
+        fillcolor='rgba(70,130,180,0.3)',
+        name=body_name,
+        legendgroup='body',
+        showlegend=True,
+        hoverinfo='skip',
+    ), row=1, col=1)
+
+    # equatorial view — body circle in x-z plane
+    fig.add_trace(go.Scatter(
+        x=bx, y=by,
+        mode='lines',
+        line=dict(color='steelblue', width=2),
+        fill='toself',
+        fillcolor='rgba(70,130,180,0.3)',
+        name=body_name,
+        legendgroup='body',
+        showlegend=False,
+        hoverinfo='skip',
+    ), row=1, col=2)
+
+    # --------------------------------------------------
+    # equator reference line in equatorial view
+    # --------------------------------------------------
+    x_max = max(np.max(np.abs(p[:, 0])) for p in props) * 1.05
+    fig.add_trace(go.Scatter(
+        x=[-x_max, x_max], y=[0, 0],
+        mode='lines',
+        line=dict(color='lightgrey', width=1, dash='dot'),
+        name='equatorial plane',
+        showlegend=True,
+        hoverinfo='skip',
+    ), row=1, col=2)
+
+    # --------------------------------------------------
+    # trajectories
+    # --------------------------------------------------
+    for idx, (traj, label) in enumerate(zip(props, labels)):
+        color = colors[idx % len(colors)]
+
+        # build hover text
+        if times is not None:
+            hover = [spice.et2utc(float(t), "C", 0) for t in times]
+        else:
+            hover = [f"step {k}" for k in range(len(traj))]
+
+        # altitude for hover
+        alt = np.linalg.norm(traj, axis=1) - body_radius
+
+        hover_text = [
+            f"<b>{label}</b><br>"
+            f"t: {h}<br>"
+            f"alt: {a:.0f} km<br>"
+            f"x: {traj[k,0]:.0f} km<br>"
+            f"y: {traj[k,1]:.0f} km<br>"
+            f"z: {traj[k,2]:.0f} km"
+            for k, (h, a) in enumerate(zip(hover, alt))
+        ]
+
+        # --- polar view: x vs y ---
+        fig.add_trace(go.Scatter(
+            x=traj[:, 0],
+            y=traj[:, 1],
+            mode='lines',
+            line=dict(color=color, width=1.5),
+            name=label,
+            legendgroup=label,
+            showlegend=True,
+            text=hover_text,
+            hoverinfo='text',
+        ), row=1, col=1)
+
+        # start marker
+        fig.add_trace(go.Scatter(
+            x=[traj[0, 0]], y=[traj[0, 1]],
+            mode='markers',
+            marker=dict(color=color, size=8, symbol='circle'),
+            name=f"{label} start",
+            legendgroup=label,
+            showlegend=False,
+            hoverinfo='skip',
+        ), row=1, col=1)
+
+        # --- equatorial view: x vs z ---
+        fig.add_trace(go.Scatter(
+            x=traj[:, 0],
+            y=traj[:, 2],
+            mode='lines',
+            line=dict(color=color, width=1.5),
+            name=label,
+            legendgroup=label,
+            showlegend=False,
+            text=hover_text,
+            hoverinfo='text',
+        ), row=1, col=2)
+
+        # start marker
+        fig.add_trace(go.Scatter(
+            x=[traj[0, 0]], y=[traj[0, 2]],
+            mode='markers',
+            marker=dict(color=color, size=8, symbol='circle'),
+            name=f"{label} start",
+            legendgroup=label,
+            showlegend=False,
+            hoverinfo='skip',
+        ), row=1, col=2)
+
+    # --------------------------------------------------
+    # equal aspect ratio — compute common range
+    # --------------------------------------------------
+    all_xy = np.concatenate([
+        np.column_stack([p[:, 0], p[:, 1]]) for p in props
+    ])
+    all_xz = np.concatenate([
+        np.column_stack([p[:, 0], p[:, 2]]) for p in props
+    ])
+
+    def axis_range(data, margin=0.1):
+        vmax = np.max(np.abs(data)) * (1 + margin)
+        return [-vmax, vmax]
+
+    xy_range = axis_range(all_xy)
+    xz_range_x = axis_range(all_xz[:, 0])
+    xz_range_z = axis_range(all_xz[:, 1])
+    xz_max = max(abs(xz_range_x[0]), abs(xz_range_z[0]))
+    xz_range = [-xz_max, xz_max]
+
+    # --------------------------------------------------
+    # layout
+    # --------------------------------------------------
+    plot_title = title or f"{body_name} orbital view"
+
+    fig.update_layout(
+        title=dict(
+            text=plot_title,
+            font=dict(size=14, color='black'),
+            x=0.5, xanchor='center',
+        ),
+        paper_bgcolor='white',
+        plot_bgcolor='white',
+        font=dict(color='black'),
+        width=1600,
+        height=800,
+        legend=dict(
+            x=1.02, y=1,
+            bordercolor='lightgrey',
+            borderwidth=1,
+            font=dict(color='black', size=10),
+        ),
+    )
+
+    # polar view axes
+    fig.update_xaxes(
+        title=dict(text="x (km)", font=dict(color='black')),
+        tickfont=dict(color='black'),
+        gridcolor='lightgrey',
+        showgrid=True,
+        zeroline=True, zerolinecolor='lightgrey',
+        scaleanchor='y', scaleratio=1,
+        range=xy_range,
+        row=1, col=1,
+    )
+    fig.update_yaxes(
+        title=dict(text="y (km)", font=dict(color='black')),
+        tickfont=dict(color='black'),
+        gridcolor='lightgrey',
+        showgrid=True,
+        zeroline=True, zerolinecolor='lightgrey',
+        range=xy_range,
+        row=1, col=1,
+    )
+
+    # equatorial view axes
+    fig.update_xaxes(
+        title=dict(text="x (km)", font=dict(color='black')),
+        tickfont=dict(color='black'),
+        gridcolor='lightgrey',
+        showgrid=True,
+        zeroline=True, zerolinecolor='lightgrey',
+        scaleanchor='y2', scaleratio=1,
+        range=xz_range,
+        row=1, col=2,
+    )
+    fig.update_yaxes(
+        title=dict(text="z (km)", font=dict(color='black')),
+        tickfont=dict(color='black'),
+        gridcolor='lightgrey',
+        showgrid=True,
+        zeroline=True, zerolinecolor='lightgrey',
+        range=xz_range,
+        row=1, col=2,
+    )
+
+    if save_html:
+        fig.write_html(save_html)
+        print(f"Saved to {save_html}")
+
+    fig.show()
+    return fig
 
 def plot_3d(rs, cb, show_plot=False, save_plot=False, au_units=False):
     fig = plt.figure(figsize=(10, 10))

@@ -5,7 +5,7 @@ import planetary_data as pd
 import spiceypy as spice
 
 
-def plot_orbits(satellites, bodies, start_date, end_date, perturbations,central_body=pd.earth, sc_data={}, steps=400, from_file=True, animate=False, show=False, save=False, save_file='matplot003.gif', frame_step=10, plot_coes=False):
+def plot_orbits(satellites, bodies, start_date, end_date, perturbations,central_body=pd.earth, sc_data={}, steps=400, from_file=True, plot_3d=False, animate=False, show=False, save=False, save_file='matplot003.gif', frame_step=10, plot_coes=False, plot_distance_body=None):
     '''
     An interface for plotting 3d orbits of any number of satellites and other bodies if they have a name and their tle is in a file in the /venv/data folder,
     plots can be animated and saved
@@ -53,9 +53,12 @@ def plot_orbits(satellites, bodies, start_date, end_date, perturbations,central_
         times = prop.times
         prop.propagate()
         props.append(prop.rs)
+        if plot_distance_body:
+            prop.plot_distance_to_body(plot_distance_body, days=True, title=f"{plot_distance_body} Probe — Distance to {plot_distance_body}",
+            save_html=f"distance_{plot_distance_body.lower()}.html")
         if plot_coes:
             prop.calculate_coes()
-            prop.plot_coes(days=True)
+            prop.plot_coes_plotly(days=True)
 
     #print(props)
 
@@ -72,9 +75,23 @@ def plot_orbits(satellites, bodies, start_date, end_date, perturbations,central_
         # append other bodies labels to satellite names
         labels.append(body)
 
+    # rotate into central body equatorial frame
+    if central_body['name'] != 'earth' and central_body['name'] != 'sun':
+        iau_frame = f"IAU_{central_body['name'].upper()}"
+        epoch_mid = times[len(times)//2]   # use midpoint epoch for rotation
+        try:
+            tipm = spice.pxform("J2000", iau_frame, epoch_mid)
+            rotated = []
+            for traj in props:
+                # traj is Nx3 — rotate each position vector
+                rotated.append(np.array([tipm @ r for r in traj]))
+            props = rotated
+        except Exception as e:
+            print(f"Warning: could not rotate to {iau_frame}: {e}")
+            print("Plotting in J2000 frame")
+
     props=np.array(props)
 
-    spice.kclear()
 
     au = False
     #set distance to AU if central_body=sun
@@ -82,14 +99,36 @@ def plot_orbits(satellites, bodies, start_date, end_date, perturbations,central_
         au = True
 
     #set plot title
-    plot_title=''
+    # build title from parameters
+    sat_names  = ", ".join([s[0] for s in satellites]) if not from_file else ", ".join(satellites)
+    body_names = ", ".join(bodies) if bodies else "none"
+    pert_names = []
+    for p in perturbations:
+        if isinstance(p, list):
+            pert_names += [b['name'].capitalize() for b in p if isinstance(b, dict)]
+        elif isinstance(p, str) and p not in ['j2', 'srp']:
+            pert_names.append(p.capitalize())
+    pert_str = ", ".join(pert_names) if pert_names else "none"
+
+    title = (
+        f"{central_body['name'].capitalize()} system — "
+        f"{sat_names}<br>"
+        f"<sup>bodies: {body_names}   "
+        f"perturbations: {pert_str}   "
+        f"{start_date} → {end_date}</sup>"
+    )
+
 
     #call the required plot
     #return t.plot_n_orbits(props, step_t=dt, labels=labels, cb=central_body, show_plot=show, save_plot=save, au_units=au, save_file=save_file)
-  
-    if animate:
-        t.plot_n_orbits_animate(props, frame_step=frame_step, step_t=dt, labels=labels, cb=central_body, show_plot=show, save=save, au_units=au, save_file=save_file)
+    if plot_3d:
+        if animate:
+            t.plot_n_orbits_animate(props, frame_step=frame_step, step_t=dt, labels=labels, cb=central_body, show_plot=show, save=save, au_units=au, save_file=save_file)
+        else:
+            t.plot_n_orbits(props, step_t=dt, labels=labels, cb=central_body, show_plot=show, save_plot=save, au_units=au, save_file=save_file)
     else:
-        t.plot_n_orbits(props, step_t=dt, labels=labels, cb=central_body, show_plot=show, save_plot=save, au_units=au, save_file=save_file)
+        t.plot_2d(props, labels, central_body, times=times, save_html=save_file if save else None, title=title)
+
+    spice.kclear()
 
 

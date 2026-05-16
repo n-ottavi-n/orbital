@@ -30,12 +30,12 @@ print("longitude of ascending node: ", elems[3]*spice.dpr())
 print("argument of periapsis: ", elems[4]*spice.dpr())
 print("mean anomaly: ", elems[5]*spice.dpr())
 
-res_orbit = t.get_resonant_orbit("EUROPA", [1, 5], t0, planetary_data.jupiter)
+res_orbit = t.get_resonant_orbit("EUROPA", [1, 6], t0, planetary_data.jupiter)
 print("resonant orbit: ", res_orbit)
 
-sats=[['europa_probe', res_orbit[0], res_orbit[1], res_orbit[2], 0.5, res_orbit[4], res_orbit[5]]]
+sats=[['europa_probe', res_orbit[0], res_orbit[1], res_orbit[2], 359.65, res_orbit[4], res_orbit[5]]]
 
-bodies=['europa']
+bodies=['europa', 'io', 'ganymede', 'callisto']
 
 cb=planetary_data.jupiter
 perturbations=[[planetary_data.io, planetary_data.europa, planetary_data.ganymede, planetary_data.callisto]] # perturbations can be given as strings of body names or as planetary_data objects in a list, for example: ['j2', [pd.mars, pd.venus], 'srp'] or ['j2', 'mars', 'venus', 'srp'] both are valid
@@ -45,4 +45,4 @@ sc_data={
     'area':12 #m²
 }
 
-plot_orbits(sats, bodies, t0, tf, perturbations, central_body=cb, sc_data=sc_data, steps=100000, from_file=False, animate=False, show=True, frame_step=50, plot_coes=False)
+plot_orbits(sats, bodies, t0, tf, perturbations, central_body=cb, sc_data=sc_data, steps=100000, from_file=False, plot_3d=False, animate=False, show=True, frame_step=50, plot_coes=True, plot_distance_body="EUROPA")

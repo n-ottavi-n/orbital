@@ -6,6 +6,8 @@ import tools as t
 import planetary_data as pd
 import matplotlib.animation as animation
 import spiceypy as spice
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
 
 class Propagator:
 
@@ -139,6 +141,362 @@ class Propagator:
         for time in range(len(self.rs)):
             coes.append(t.rv2coes(self.rs[time],self.vs[time], deg=True, mu=self.cb['mu']))
         self.coes=np.array(coes)
+
+    def plot_coes_plotly(self, hours=False, days=False, title=None, save_html=None):
+        """
+        Plot orbital elements evolution in Plotly.
+        Includes linear trend for argument of periapsis (apsidal rotation)
+        and longitude of ascending node (nodal regression).
+        """
+        ts     = self.ts.flatten()
+        xlabel = "Time (seconds)"
+
+        if hours:
+            ts     = ts / 3600
+            xlabel = "Time (hours)"
+        elif days:
+            ts     = ts / (3600 * 24)
+            xlabel = "Time (days)"
+
+        # --------------------------------------------------
+        # linear trends for aop and lan
+        # --------------------------------------------------
+        z_aop  = np.polyfit(ts, self.coes[:, 4], 1)
+        p_aop  = np.poly1d(z_aop)
+        aop_trend = p_aop(ts)
+
+        z_lan  = np.polyfit(ts, self.coes[:, 5], 1)
+        p_lan  = np.poly1d(z_lan)
+        lan_trend = p_lan(ts)
+
+        # trend rates
+        aop_rate = z_aop[0]   # deg per time unit
+        lan_rate = z_lan[0]
+
+        # --------------------------------------------------
+        # subplot layout — 2 rows x 3 cols
+        # --------------------------------------------------
+        fig = make_subplots(
+            rows=2, cols=3,
+            subplot_titles=(
+                "Semi-major axis",
+                "Eccentricity",
+                "Inclination",
+                "True anomaly",
+                f"Apsidal rotation  ({aop_rate:+.4f} deg/{xlabel.split()[1]})",
+                f"Nodal regression  ({lan_rate:+.4f} deg/{xlabel.split()[1]})",
+            ),
+            vertical_spacing=0.14,
+            horizontal_spacing=0.08,
+        )
+
+        # common line style
+        line = dict(color='royalblue', width=1.5)
+        trend_line = dict(color='tomato', width=1.5, dash='dash')
+
+        # --------------------------------------------------
+        # semi-major axis
+        # --------------------------------------------------
+        fig.add_trace(go.Scatter(
+            x=ts, y=self.coes[:, 0],
+            mode='lines', line=line,
+            name='a', showlegend=False,
+            hovertemplate=f"{xlabel.split()[1]}: %{{x:.2f}}<br>a: %{{y:.2f}} km<extra></extra>",
+        ), row=1, col=1)
+
+        # --------------------------------------------------
+        # eccentricity
+        # --------------------------------------------------
+        fig.add_trace(go.Scatter(
+            x=ts, y=self.coes[:, 1],
+            mode='lines', line=line,
+            name='e', showlegend=False,
+            hovertemplate=f"{xlabel.split()[1]}: %{{x:.2f}}<br>e: %{{y:.6f}}<extra></extra>",
+        ), row=1, col=2)
+
+        # --------------------------------------------------
+        # inclination
+        # --------------------------------------------------
+        fig.add_trace(go.Scatter(
+            x=ts, y=self.coes[:, 2],
+            mode='lines', line=line,
+            name='i', showlegend=False,
+            hovertemplate=f"{xlabel.split()[1]}: %{{x:.2f}}<br>i: %{{y:.4f}} deg<extra></extra>",
+        ), row=1, col=3)
+
+        # --------------------------------------------------
+        # true anomaly
+        # --------------------------------------------------
+        fig.add_trace(go.Scatter(
+            x=ts, y=self.coes[:, 3],
+            mode='lines', line=line,
+            name='nu', showlegend=False,
+            hovertemplate=f"{xlabel.split()[1]}: %{{x:.2f}}<br>ν: %{{y:.2f}} deg<extra></extra>",
+        ), row=2, col=1)
+
+        # --------------------------------------------------
+        # argument of periapsis — raw + trend
+        # --------------------------------------------------
+        fig.add_trace(go.Scatter(
+            x=ts, y=self.coes[:, 4],
+            mode='lines',
+            line=dict(color='royalblue', width=1, dash='dot'),
+            name='aop raw', showlegend=True,
+            opacity=0.4,
+            hovertemplate=f"{xlabel.split()[1]}: %{{x:.2f}}<br>ω: %{{y:.2f}} deg<extra></extra>",
+        ), row=2, col=2)
+
+        fig.add_trace(go.Scatter(
+            x=ts, y=aop_trend,
+            mode='lines', line=trend_line,
+            name='aop trend', showlegend=True,
+            hovertemplate=f"{xlabel.split()[1]}: %{{x:.2f}}<br>ω trend: %{{y:.2f}} deg<extra></extra>",
+        ), row=2, col=2)
+
+        # --------------------------------------------------
+        # longitude of ascending node — raw + trend
+        # --------------------------------------------------
+        fig.add_trace(go.Scatter(
+            x=ts, y=self.coes[:, 5],
+            mode='lines',
+            line=dict(color='royalblue', width=1, dash='dot'),
+            name='lan raw', showlegend=True,
+            opacity=0.4,
+            hovertemplate=f"{xlabel.split()[1]}: %{{x:.2f}}<br>Ω: %{{y:.2f}} deg<extra></extra>",
+        ), row=2, col=3)
+
+        fig.add_trace(go.Scatter(
+            x=ts, y=lan_trend,
+            mode='lines', line=trend_line,
+            name='lan trend', showlegend=True,
+            hovertemplate=f"{xlabel.split()[1]}: %{{x:.2f}}<br>Ω trend: %{{y:.2f}} deg<extra></extra>",
+        ), row=2, col=3)
+
+        # --------------------------------------------------
+        # axis labels
+        # --------------------------------------------------
+        ylabels = {
+            (1,1): "a (km)",
+            (1,2): "e",
+            (1,3): "i (deg)",
+            (2,1): "ν (deg)",
+            (2,2): "ω (deg)",
+            (2,3): "Ω (deg)",
+        }
+
+        for (row, col), ylabel in ylabels.items():
+            fig.update_yaxes(
+                title=dict(text=ylabel, font=dict(color='black')),
+                tickfont=dict(color='black'),
+                gridcolor='lightgrey',
+                showgrid=True,
+                zeroline=False,
+                row=row, col=col,
+            )
+            fig.update_xaxes(
+                title=dict(text=xlabel, font=dict(color='black')),
+                tickfont=dict(color='black'),
+                gridcolor='lightgrey',
+                showgrid=True,
+                zeroline=False,
+                row=row, col=col,
+            )
+
+        # --------------------------------------------------
+        # layout
+        # --------------------------------------------------
+        plot_title = title or "Orbital Elements Evolution"
+
+        fig.update_layout(
+            title=dict(
+                text=plot_title,
+                font=dict(size=14, color='black'),
+                x=0.5, xanchor='center',
+            ),
+            paper_bgcolor='white',
+            plot_bgcolor='white',
+            font=dict(color='black'),
+            width=1200,
+            height=700,
+            legend=dict(
+                x=1.02, y=1,
+                bordercolor='lightgrey',
+                borderwidth=1,
+                font=dict(color='black', size=9),
+            ),
+        )
+
+        if save_html:
+            fig.write_html(save_html)
+            print(f"Saved to {save_html}")
+
+        fig.show()
+        return fig
+    
+    def plot_distance_to_body(self, body_name, hours=False, days=False,
+                           title=None, save_html=None):
+        """
+        Plot distance from spacecraft to a given body over time.
+
+        Parameters
+        ----------
+        body_name : str
+            SPICE name of the body (e.g. "EUROPA", "JUPITER")
+        hours     : bool — plot time in hours
+        days      : bool — plot time in days
+        title     : str — plot title (optional)
+        save_html : str — path to save HTML (optional)
+        """
+        import plotly.graph_objects as go
+
+        ts     = self.ts.flatten()
+        xlabel = "Time (seconds)"
+
+        if hours:
+            ts     = ts / 3600
+            xlabel = "Time (hours)"
+        elif days:
+            ts     = ts / (3600 * 24)
+            xlabel = "Time (days)"
+
+        # --------------------------------------------------
+        # get body positions from SPICE at each timestep
+        # --------------------------------------------------
+        body_radius = None
+        try:
+            radii       = spice.bodvrd(body_name, "RADII", 3)[1]
+            body_radius = float(np.mean(radii))
+        except Exception:
+            pass
+
+        r_body = np.array([
+            spice.spkpos(body_name, float(t),
+                        'J2000', 'NONE',
+                        self.cb['name'].upper())[0]
+            for t in self.times
+        ])
+
+        # --------------------------------------------------
+        # distance and altitude
+        # --------------------------------------------------
+        rel      = self.rs - r_body
+        dist_km  = np.linalg.norm(rel, axis=1)
+
+        if body_radius is not None:
+            alt_km = dist_km - body_radius
+        else:
+            alt_km = None
+
+        # --------------------------------------------------
+        # figure
+        # --------------------------------------------------
+        fig = go.Figure()
+
+        # altitude trace (if body radius available)
+        if alt_km is not None:
+            fig.add_trace(go.Scatter(
+                x=ts,
+                y=alt_km,
+                mode='lines',
+                line=dict(color='royalblue', width=1.5),
+                name=f"altitude above {body_name.capitalize()}",
+                hovertemplate=(
+                    f"{xlabel.split()[1]}: %{{x:.2f}}<br>"
+                    f"altitude: %{{y:.2f}} km"
+                    "<extra></extra>"
+                ),
+            ))
+
+            # surface line
+            fig.add_hline(
+                y=0,
+                line=dict(color='grey', width=1, dash='dot'),
+                annotation_text=f"{body_name.capitalize()} surface",
+                annotation_position="bottom right",
+                annotation_font=dict(color='grey', size=9),
+            )
+
+            # body radius line
+            fig.add_hline(
+                y=body_radius,
+                line=dict(color='steelblue', width=1, dash='dot'),
+                annotation_text=f"R = {body_radius:.0f} km",
+                annotation_position="top right",
+                annotation_font=dict(color='steelblue', size=9),
+            )
+
+        # --------------------------------------------------
+        # closest approach annotation
+        # --------------------------------------------------
+        i_min    = np.argmin(dist_km)
+        t_min    = ts[i_min]
+        d_min    = dist_km[i_min]
+
+        fig.add_trace(go.Scatter(
+            x=[t_min], y=[d_min],
+            mode='markers+text',
+            marker=dict(color='tomato', size=10, symbol='star'),
+            text=[f"CA: {d_min:.0f} km"],
+            textposition='top right',
+            textfont=dict(color='tomato', size=10),
+            name=f"closest approach",
+            showlegend=True,
+            hovertemplate=(
+                f"closest approach<br>"
+                f"{xlabel.split()[1]}: {t_min:.2f}<br>"
+                f"distance: {d_min:.2f} km"
+                + (f"<br>altitude: {d_min - body_radius:.2f} km"
+                if body_radius else "")
+                + "<extra></extra>"
+            ),
+        ))
+
+        # --------------------------------------------------
+        # layout
+        # --------------------------------------------------
+        plot_title = title or (
+            f"Distance to {body_name.capitalize()} over time"
+        )
+
+        fig.update_layout(
+            title=dict(
+                text=plot_title,
+                font=dict(size=14, color='black'),
+                x=0.5, xanchor='center',
+            ),
+            xaxis=dict(
+                title=dict(text=xlabel, font=dict(color='black')),
+                tickfont=dict(color='black'),
+                gridcolor='lightgrey',
+                showgrid=True,
+                zeroline=False,
+            ),
+            yaxis=dict(
+                title=dict(text="Distance (km)", font=dict(color='black')),
+                tickfont=dict(color='black'),
+                gridcolor='lightgrey',
+                showgrid=True,
+                zeroline=False,
+            ),
+            paper_bgcolor='white',
+            plot_bgcolor='white',
+            font=dict(color='black'),
+            width=1000,
+            height=500,
+            legend=dict(
+                x=1.02, y=1,
+                bordercolor='lightgrey',
+                borderwidth=1,
+                font=dict(color='black', size=10),
+            ),
+        )
+
+        if save_html:
+            fig.write_html(save_html)
+            print(f"Saved to {save_html}")
+
+        fig.show()
+        return fig
 
     def plot_coes(self, hours=False, days=False):
         print("plotting...")
