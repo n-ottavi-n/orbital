@@ -42,7 +42,7 @@ def get_resonant_orbit(body, resonance_ratio, t0, cb=planetary_data.earth):
     satellite_i = i*spice.dpr()
     satellite_raan = raan*spice.dpr()
     satellite_argp = argp*spice.dpr()
-    satellite_m0 = 0
+    satellite_m0 = m0
     sat_period = 2 * math.pi * math.sqrt((satellite_a**3) / mu)
     print("period ratio:", sat_period/body_period)
     return [satellite_a, satellite_e, satellite_i, satellite_m0, satellite_argp, satellite_raan]
