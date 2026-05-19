@@ -8,3 +8,12 @@ src/spice_solar_system/sat459.bsp
 src/spice_solar_system/jup365.bsp
 src/apps/earth_app.py
 venv/
+*.pyc
+temp_kernel.tm
+venv/pyvenv.cfg
+venv/Scripts/pythonw.exe
+venv/Scripts/python.exe
+venv/Scripts/activate.bat
+venv/Scripts/activate.fish
+venv/Scripts/activate.ps1
+venv/Scripts/activate
